@@ -13,11 +13,17 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->string('rol');
             $table->string('name');
+            $table->string('last_name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->rememberToken();
+            $table->string('phone');
+            $table->enum('sex', ['male', 'female', 'other']);
+            $table->unsignedTinyInteger('age');
+            $table->date('date_of_birth');
+            $table->string('link_photo')->nullable();
+            $table->rememberToken(); // Genera un token para que el usuario permanezca autenticado, incluso después de cerrar el navegador
             $table->timestamps();
         });
     }
