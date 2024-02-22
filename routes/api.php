@@ -1,5 +1,12 @@
 <?php
 
+use App\Http\Controllers\AllergyController;
+use App\Http\Controllers\AllergyPatientController;
+use App\Http\Controllers\DiseaseController;
+use App\Http\Controllers\DiseasePatientController;
+use App\Http\Controllers\MedicationController;
+use App\Http\Controllers\MedicationPatientController;
+use App\Http\Controllers\PatientController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,3 +27,11 @@ use Illuminate\Support\Facades\Route;
 // });
 
 Route::resource('/users', UserController::class);
+Route::resource('/patients', PatientController::class);
+Route::resource('/allergies', AllergyController::class);
+// Route::resource('/patients/{id_allergy}/allergies/{id_relation}', PatientController::class); // TODO: POST y DELETE
+Route::resource('/patients_allergies', AllergyPatientController::class);
+Route::resource('/diseases', DiseaseController::class);
+Route::resource('/diseases_patients', DiseasePatientController::class);
+Route::resource('/medications', MedicationController::class);
+Route::resource('/medications_patients', MedicationPatientController::class);

@@ -5,11 +5,9 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
-class UserRequest extends FormRequest
+class DiseasePatientRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -31,7 +29,6 @@ class UserRequest extends FormRequest
         ], 400));
     }
 
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -39,26 +36,9 @@ class UserRequest extends FormRequest
      */
     public function rules(): array
     {
-        $rules = [
-            'name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => [
-                'email',
-                Rule::unique('users', 'email')->ignore($this->route('user') ?? $this->route('patient')),
-            ],
-            'password' => 'required|string|min:8',
-            'phone' => 'required|string|max:20',
-            'sex' => 'required|in:male,female,other',
-            'age' => 'required|integer|min:0',
-            'date_of_birth' => 'required|date',
-            'link_photo' => 'nullable|string',
+        return [
+            'patient_user_id' => 'required|integer',
+            'disease_id' => 'required|integer',
         ];
-
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $sentFields = array_keys($this->all());
-            $rules = array_intersect_key($rules, array_flip($sentFields));
-        }
-
-        return $rules;
     }
 }
