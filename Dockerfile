@@ -7,7 +7,7 @@ RUN apt-get update -y && apt-get install -y openssl zip unzip git libonig-dev
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo pdo_pgsql mbstring
+RUN docker-php-ext-install pdo mbstring pdo_pgsql
 
 # Set working directory
 WORKDIR /app
