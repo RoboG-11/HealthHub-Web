@@ -1,14 +1,13 @@
 FROM php:8.3.2
 
 # Install dependencies
-RUN apt-get update -y && apt-get install -y openssl zip unzip git libonig-dev
+RUN apt-get update -y && apt-get install -y openssl zip unzip git libonig-dev libpq-dev
 
 # Install Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Install PHP extensions
-# RUN docker-php-ext-install pdo mbstring pdo_pgsql
-RUN docker-php-ext-install pdo mbstring
+RUN docker-php-ext-install pdo mbstring pdo_pgsql
 
 # Set working directory
 WORKDIR /app
