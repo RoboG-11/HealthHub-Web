@@ -5,6 +5,16 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @OA\Schema(
+ *     schema="MedicationResource",
+ *     type="object",
+ *     title="Medication Resource",
+ *     @OA\Property(property="medication_name", type="string", example="Nombre de la medicación"),
+ *     @OA\Property(property="description", type="string", example="Descripción de la medicación")
+ * )
+ */
+
 class MedicationResource extends JsonResource
 {
     /**

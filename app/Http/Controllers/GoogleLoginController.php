@@ -43,6 +43,26 @@ class GoogleLoginController extends Controller
         return Socialite::driver('google')->redirect();
     }
 
+    /**
+     * Maneja la respuesta de Google después de la autenticación.
+     *
+     * @OA\Post(
+     *     path="/api/google/callback",
+     *     summary="Maneja la respuesta de Google después de la autenticación",
+     *     @OA\Response(
+     *         response=302,
+     *         description="Redirige al usuario a la página de autenticación de Google",
+     *         @OA\MediaType(
+     *             mediaType="text/html",
+     *             @OA\Schema(
+     *                 type="string"
+     *             )
+     *         )
+     *     )
+     * )
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function handleGoogleCallback()
     {
         try {

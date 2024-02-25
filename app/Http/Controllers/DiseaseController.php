@@ -13,8 +13,56 @@ use Illuminate\Support\Facades\Log;
 
 class DiseaseController extends Controller
 {
+
     /**
-     * Display a listing of the resource.
+     * Obtiene una lista paginada de todas las enfermedades.
+     *
+     * @OA\Get(
+     *     path="/api/diseases",
+     *     summary="Obtiene una lista paginada de todas las enfermedades",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de enfermedades obtenida correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", type="array",
+     *                 @OA\Items(
+     *                     @OA\Property(property="id", type="integer", example="1"),
+     *                     @OA\Property(property="disease_name", type="string", example="Influenza"),
+     *                     @OA\Property(property="description", type="string", example="Viral infection that affects the respiratory system.")
+     *                 )
+     *             ),
+     *             @OA\Property(property="links", type="object",
+     *                 @OA\Property(property="first", type="string"),
+     *                 @OA\Property(property="last", type="string"),
+     *                 @OA\Property(property="prev", type="string"),
+     *                 @OA\Property(property="next", type="string")
+     *             ),
+     *             @OA\Property(property="meta", type="object",
+     *                 @OA\Property(property="current_page", type="integer", example="1"),
+     *                 @OA\Property(property="from", type="integer", example="1"),
+     *                 @OA\Property(property="last_page", type="integer", example="3"),
+     *                 @OA\Property(property="links", type="array",
+     *                     @OA\Items(type="string")
+     *                 ),
+     *                 @OA\Property(property="path", type="string"),
+     *                 @OA\Property(property="per_page", type="integer", example="5"),
+     *                 @OA\Property(property="to", type="integer", example="5"),
+     *                 @OA\Property(property="total", type="integer", example="13")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error.")
+     *         )
+     *     )
+     * )
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -60,7 +108,39 @@ class DiseaseController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crea una nueva enfermedad.
+     *
+     * @OA\Post(
+     *     path="/api/diseases",
+     *     summary="Crea una nueva enfermedad",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos de la enfermedad a crear",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="disease_name", type="string", example="Influenza"),
+     *             @OA\Property(property="description", type="string", example="Viral infection that affects the respiratory system.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Enfermedad creada correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/DiseaseResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error.")
+     *         )
+     *     )
+     * )
+     *
+     * @param DiseaseRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(DiseaseRequest $request): JsonResponse
     {
@@ -81,7 +161,48 @@ class DiseaseController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Obtiene una enfermedad específica por su ID.
+     *
+     * @OA\Get(
+     *     path="/api/diseases/{id}",
+     *     summary="Obtiene una enfermedad específica por su ID",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la enfermedad",
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Enfermedad obtenida correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/DiseaseResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Enfermedad no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Disease not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error.")
+     *         )
+     *     )
+     * )
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(string $id): JsonResponse
     {
@@ -107,7 +228,57 @@ class DiseaseController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza una enfermedad existente.
+     *
+     * @OA\Put(
+     *     path="/api/diseases/{id}",
+     *     summary="Actualiza una enfermedad existente",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la enfermedad",
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos de la enfermedad a actualizar",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="disease_name", type="string", example="Updated Disease Name"),
+     *             @OA\Property(property="description", type="string", example="Updated description of the disease.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Enfermedad actualizada correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/DiseaseResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Enfermedad no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Disease not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error.")
+     *         )
+     *     )
+     * )
+     *
+     * @param DiseaseRequest $request
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(DiseaseRequest $request, string $id): JsonResponse
     {
@@ -140,7 +311,47 @@ class DiseaseController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina una enfermedad existente.
+     *
+     * @OA\Delete(
+     *     path="/api/diseases/{id}",
+     *     summary="Elimina una enfermedad existente",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la enfermedad",
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Enfermedad eliminada correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Enfermedad no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Disease not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error.")
+     *         )
+     *     )
+     * )
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(string $id): JsonResponse
     {

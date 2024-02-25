@@ -5,6 +5,16 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * Recurso para representar una relación entre Medicación y Paciente.
+ *
+ * @OA\Schema(
+ *     title="MedicationPatientResource",
+ *     @OA\Property(property="id", type="integer", example="1"),
+ *     @OA\Property(property="patient_user_id", type="integer", example="1"),
+ *     @OA\Property(property="medication_id", type="integer", example="1")
+ * )
+ */
 class MedicationPatientResource extends JsonResource
 {
     /**

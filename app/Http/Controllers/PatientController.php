@@ -29,7 +29,54 @@ class PatientController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Obtiene una lista paginada de pacientes.
+     *
+     * @OA\Get(
+     *     path="/api/patients",
+     *     summary="Obtiene una lista paginada de pacientes",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista paginada de pacientes",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/PatientResource")
+     *             ),
+     *             @OA\Property(
+     *                 property="links",
+     *                 type="object",
+     *                 @OA\Property(property="first", type="string"),
+     *                 @OA\Property(property="last", type="string"),
+     *                 @OA\Property(property="prev", type="string"),
+     *                 @OA\Property(property="next", type="string")
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 @OA\Property(property="current_page", type="integer"),
+     *                 @OA\Property(property="from", type="integer"),
+     *                 @OA\Property(property="last_page", type="integer"),
+     *                 @OA\Property(property="links", type="array", @OA\Items(type="string")),
+     *                 @OA\Property(property="path", type="string"),
+     *                 @OA\Property(property="per_page", type="integer"),
+     *                 @OA\Property(property="to", type="integer"),
+     *                 @OA\Property(property="total", type="integer")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
+     *     )
+     * )
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -71,7 +118,74 @@ class PatientController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crea un nuevo paciente.
+     *
+     * @OA\Post(
+     *     path="/api/patients",
+     *     summary="Crea un nuevo paciente",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos del paciente a crear",
+     *         @OA\JsonContent(
+     *             required={
+     *                 "name",
+     *                 "last_name",
+     *                 "email",
+     *                 "password",
+     *                 "phone",
+     *                 "sex",
+     *                 "age",
+     *                 "date_of_birth",
+     *                 "link_photo",
+     *                 "weight",
+     *                 "height",
+     *                 "nss",
+     *                 "occupation",
+     *                 "blood_type",
+     *                 "emergency_contact_phone"
+     *             },
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="last_name", type="string"),
+     *             @OA\Property(property="email", type="string", format="email"),
+     *             @OA\Property(property="password", type="string"),
+     *             @OA\Property(property="phone", type="string"),
+     *             @OA\Property(property="sex", type="string", enum={"M", "F"}),
+     *             @OA\Property(property="age", type="integer"),
+     *             @OA\Property(property="date_of_birth", type="string", format="date"),
+     *             @OA\Property(property="link_photo", type="string"),
+     *             @OA\Property(property="weight", type="number", format="float"),
+     *             @OA\Property(property="height", type="number", format="float"),
+     *             @OA\Property(property="nss", type="string"),
+     *             @OA\Property(property="occupation", type="string"),
+     *             @OA\Property(property="blood_type", type="string"),
+     *             @OA\Property(property="emergency_contact_phone", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Paciente creado exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 ref="#/components/schemas/PatientResource"
+     *             ),
+     *             @OA\Property(property="token", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
+     *     )
+     * )
+     *
+     * @param PatientRequest $patientRequest
+     * @param UserRequest $userRequest
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(PatientRequest $patientRequest, UserRequest $userRequest): JsonResponse
     {
@@ -129,7 +243,46 @@ class PatientController extends Controller
 
 
     /**
-     * Display the specified resource.
+     * Muestra los detalles de un paciente por su ID de usuario.
+     *
+     * @OA\Get(
+     *     path="/api/patients/{id}",
+     *     summary="Muestra los detalles de un paciente por su ID de usuario",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de usuario del paciente",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Detalles del paciente mostrados correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/PatientResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Paciente no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Paciente no encontrado")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(string $id): JsonResponse
     {
@@ -156,7 +309,73 @@ class PatientController extends Controller
 
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza los datos de un paciente y su usuario asociado.
+     *
+     * @OA\Put(
+     *     path="/api/patients/{id}",
+     *     summary="Actualizar paciente y usuario",
+     *     operationId="updatePatient",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del paciente a actualizar",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos del paciente y usuario a actualizar",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="weight", type="string", example="70"),
+     *             @OA\Property(property="height", type="string", example="180"),
+     *             @OA\Property(property="nss", type="string", example="123456789"),
+     *             @OA\Property(property="occupation", type="string", example="Engineer"),
+     *             @OA\Property(property="blood_type", type="string", example="AB+"),
+     *             @OA\Property(property="emergency_contact_phone", type="string", example="555-555-5555"),
+     *             @OA\Property(property="name", type="string", example="John"),
+     *             @OA\Property(property="last_name", type="string", example="Doe"),
+     *             @OA\Property(property="email", type="string", example="john.doe@example.com"),
+     *             @OA\Property(property="phone", type="string", example="555-555-5555"),
+     *             @OA\Property(property="sex", type="string", example="Male"),
+     *             @OA\Property(property="age", type="integer", example=30),
+     *             @OA\Property(property="date_of_birth", type="string", format="date", example="1990-01-01"),
+     *             @OA\Property(property="link_photo", type="string", example="http://example.com/photo.jpg")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Operación exitosa",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(
+     *                 property="data",
+     *                 @OA\Property(
+     *                     property="patient",
+     *                     ref="#/components/schemas/PatientResource"
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Paciente o usuario no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Paciente o usuario no encontrado")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
      */
     public function update(PatientRequest $patientRequest, UserRequest $userRequest, string $id)
     {
@@ -204,7 +423,45 @@ class PatientController extends Controller
 
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina un paciente y su usuario asociado por el ID del usuario.
+     *
+     * @OA\Delete(
+     *     path="/api/patients/{id}",
+     *     summary="Elimina un paciente y su usuario asociado por el ID del usuario",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de usuario del paciente",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Paciente y usuario eliminados correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Paciente no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Paciente no encontrado")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(string $id): JsonResponse
     {
@@ -232,6 +489,39 @@ class PatientController extends Controller
         }
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/login",
+     *     summary="Iniciar sesión",
+     *     description="Inicia sesión con las credenciales de usuario y devuelve un token de autenticación",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Credenciales de usuario",
+     *         @OA\JsonContent(
+     *             required={"email","password"},
+     *             @OA\Property(property="email", type="string", format="email", example="usuario@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="contraseña")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Operación exitosa",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="token", type="string", example="TOKEN_DE_AUTENTICACION"),
+     *             @OA\Property(property="user", type="object", description="Datos del usuario")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Credenciales inválidas",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Credenciales inválidas")
+     *         )
+     *     )
+     * )
+     */
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');

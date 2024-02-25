@@ -13,8 +13,48 @@ use Illuminate\Support\Facades\Log;
 
 class MedicationPatientController extends Controller
 {
+
     /**
-     * Display a listing of the resource.
+     * Obtiene una lista paginada de las relaciones entre alergias y pacientes.
+     *
+     * @OA\Get(
+     *     path="/api/medication-patients",
+     *     summary="Obtiene una lista paginada de las relaciones entre alergias y pacientes",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de relaciones obtenida correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/MedicationPatientResource")),
+     *             @OA\Property(property="links", type="object", 
+     *                 @OA\Property(property="first", type="string"),
+     *                 @OA\Property(property="last", type="string"),
+     *                 @OA\Property(property="prev", type="string"),
+     *                 @OA\Property(property="next", type="string")
+     *             ),
+     *             @OA\Property(property="meta", type="object", 
+     *                 @OA\Property(property="current_page", type="integer"),
+     *                 @OA\Property(property="from", type="integer"),
+     *                 @OA\Property(property="last_page", type="integer"),
+     *                 @OA\Property(property="links", type="array", @OA\Items(type="string")),
+     *                 @OA\Property(property="path", type="string"),
+     *                 @OA\Property(property="per_page", type="integer"),
+     *                 @OA\Property(property="to", type="integer"),
+     *                 @OA\Property(property="total", type="integer")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -60,7 +100,39 @@ class MedicationPatientController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Crea una nueva relación entre la alergia y el paciente.
+     *
+     * @OA\Post(
+     *     path="/api/medication-patients",
+     *     summary="Crea una nueva relación entre la alergia y el paciente",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos de la relación a crear",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="patient_user_id", type="integer", example="1"),
+     *             @OA\Property(property="medication_id", type="integer", example="1")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Relación creada correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/MedicationPatientResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     *
+     * @param MedicationPatientRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(MedicationPatientRequest $request): JsonResponse
     {
@@ -81,7 +153,46 @@ class MedicationPatientController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Obtiene una relación entre alergia y paciente por su ID.
+     *
+     * @OA\Get(
+     *     path="/api/medication-patients/{id}",
+     *     summary="Obtiene una relación entre alergia y paciente por su ID",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la relación entre alergia y paciente",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Relación obtenida correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/MedicationPatientResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Relación no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="medication_patient not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
+     *     )
+     * )
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(string $id): JsonResponse
     {
@@ -107,8 +218,57 @@ class MedicationPatientController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza una relación entre alergia y paciente por su ID.
+     *
+     * @OA\Put(
+     *     path="/api/medication-patients/{id}",
+     *     summary="Actualiza una relación entre alergia y paciente por su ID",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la relación entre alergia y paciente",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos de la relación a actualizar",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="patient_user_id", type="integer", example="1"),
+     *             @OA\Property(property="medication_id", type="integer", example="1")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Relación actualizada correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/MedicationPatientResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Relación no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="medication_patient not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
+     *     )
+     * )
+     *
+     * @param MedicationPatientRequest $request
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
      */
+
     public function update(MedicationPatientRequest $request, string $id): JsonResponse
     {
         try {
@@ -140,7 +300,45 @@ class MedicationPatientController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina una relación entre alergia y paciente por su ID.
+     *
+     * @OA\Delete(
+     *     path="/api/medication-patients/{id}",
+     *     summary="Elimina una relación entre alergia y paciente por su ID",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la relación entre alergia y paciente",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Relación eliminada correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Relación no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="medication_patient not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
+     *     )
+     * )
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(string $id): JsonResponse
     {
