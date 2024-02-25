@@ -28,7 +28,9 @@ class User extends Authenticatable
         'sex',
         'age',
         'date_of_birth',
-        'link_photo'
+        'link_photo',
+        'external_id',
+        'external_auth'
     ];
 
     /**

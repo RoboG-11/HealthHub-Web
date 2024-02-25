@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GoogleLoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +17,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/error', function () {
+    return response()->json([
+        'success' => false,
+        'message' => 'No hay credenciales de acceso'
+    ], 401);
+})->name('error');
+
+Route::get('/login-google', [GoogleLoginController::class, 'redirectToGoogle']);
+Route::get('/google-callback', [GoogleLoginController::class, 'handleGoogleCallback']);

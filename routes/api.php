@@ -29,9 +29,26 @@ use Illuminate\Support\Facades\Route;
 Route::resource('/users', UserController::class);
 Route::resource('/patients', PatientController::class);
 Route::resource('/allergies', AllergyController::class);
-// Route::resource('/patients/{id_allergy}/allergies/{id_relation}', PatientController::class); // TODO: POST y DELETE
 Route::resource('/patients_allergies', AllergyPatientController::class);
 Route::resource('/diseases', DiseaseController::class);
 Route::resource('/diseases_patients', DiseasePatientController::class);
 Route::resource('/medications', MedicationController::class);
 Route::resource('/medications_patients', MedicationPatientController::class);
+
+// Route::middleware('auth:sanctum')->get('/test', function (Request $request) {
+//     return $request->user();
+// });
+
+// Route::post('/patients/login', [PatientController::class, 'login']);
+
+// TEST: Google
+// use Laravel\Socialite\Facades\Socialite;
+// use App\Http\Controllers\GoogleLoginController;
+
+// Route::get('/login-google', [GoogleLoginController::class, 'redirectToGoogle']);
+// Route::get('/google-callback', [GoogleLoginController::class, 'handleGoogleCallback']);
+
+// Route::group(['middleware' => ['web']], function () {
+//     Route::get('/login-google', [GoogleLoginController::class, 'redirectToGoogle']);
+//     Route::get('/google-callback', [GoogleLoginController::class, 'handleGoogleCallback']);
+// });

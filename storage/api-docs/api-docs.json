@@ -1,0 +1,33 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "API de autenticación con Google",
+        "description": "Esta API permite autenticarse con Google y registrar nuevos usuarios.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://127.0.0.1:8000"
+        }
+    ],
+    "paths": {
+        "/api/google/redirect": {
+            "get": {
+                "summary": "Redirige al usuario a la página de autenticación de Google",
+                "operationId": "f907e9d0a2e37abdfc1232df2cc962d3",
+                "responses": {
+                    "302": {
+                        "description": "Redirige al usuario a la página de autenticación de Google",
+                        "content": {
+                            "text/html": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

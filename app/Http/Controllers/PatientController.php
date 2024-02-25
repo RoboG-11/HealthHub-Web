@@ -17,10 +17,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Auth;
 
 class PatientController extends Controller
 {
-
     private $userController;
 
     public function __construct(UserController $userController)
@@ -91,8 +91,9 @@ class PatientController extends Controller
                 return $userResponse;
             }
 
-            $patientData = $patientRequest->validated();
+            $user = User::find($userResponse->getData()->data->id);
 
+            $patientData = $patientRequest->validated();
             $patientData['user_id'] = $userResponse->getData()->data->id;
             $patientData['weight'] = $patientRequest->input('weight');
             $patientData['height'] = $patientRequest->input('height');
@@ -109,9 +110,12 @@ class PatientController extends Controller
             $patientJson = $patientJson->toArray($patientRequest);
             $patientJson['personal_information'] = $userResponse->getData()->data;
 
+            $token = $user->createToken('API TOKEN')->plainTextToken;
+
             return response()->json([
                 'success' => true,
-                'data' => $patientJson
+                'data' => $patientJson,
+                'token' => $token
             ], 201);
         } catch (QueryException $e) {
             DB::rollBack();
@@ -226,5 +230,26 @@ class PatientController extends Controller
                 'message' => 'Error interno del servidor'
             ], 500);
         }
+    }
+
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            $user = User::find(Auth::id());
+            $token = $user->createToken('API TOKEN')->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'token' => $token,
+                'user' => $user
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Credenciales inválidas'
+        ], 401);
     }
 }
