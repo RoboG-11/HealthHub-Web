@@ -73,7 +73,7 @@ class GoogleLoginController extends Controller
                 return redirect('/#' . $token, 302);
             }
         } catch (\Exception $e) {
-            Log::error('Error al crear un nuevo usuario: ' . $e->getMessage());
+            Log::error('Error al obtener información del usuario de Google: ' . $e->getMessage());
 
             return response()->json([
                 'success' => false,
