@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Laravel\Socialite\Facades\Socialite;
 
 /**
@@ -72,6 +73,8 @@ class GoogleLoginController extends Controller
                 return redirect('/#' . $token, 302);
             }
         } catch (\Exception $e) {
+            Log::error('Error al crear un nuevo usuario: ' . $e->getMessage());
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error al obtener información del usuario de Google: ' . $e->getMessage()
