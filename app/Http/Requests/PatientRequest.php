@@ -38,22 +38,6 @@ class PatientRequest extends FormRequest
      */
     public function rules(): array
     {
-        // $userId = $this->user_id ?? null; // Si estás actualizando un paciente, obtén el user_id actual
-
-        // return [
-        //     'weight' => 'required|numeric|min:0',
-        //     'height' => 'required|numeric|min:0',
-        //     'nss' => [
-        //         'required',
-        //         'string',
-        //         'max:255',
-        //         Rule::unique('patients', 'nss')->ignore($userId, 'user_id'),
-        //     ],
-        //     'occupation' => 'nullable|string|max:255',
-        //     'blood_type' => 'nullable|string|max:255',
-        //     'emergency_contact_phone' => 'nullable|string|max:20',
-        // ];
-
         return [
             'weight' => 'required|numeric|min:0',
             'height' => 'required|numeric|min:0',

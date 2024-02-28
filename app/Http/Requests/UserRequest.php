@@ -44,7 +44,7 @@ class UserRequest extends FormRequest
             'last_name' => 'required|string|max:255',
             'email' => [
                 'email',
-                Rule::unique('users', 'email')->ignore($this->route('user') ?? $this->route('patient')),
+                Rule::unique('users', 'email')->ignore($this->route('user') ?? $this->route('patient') ?? $this->route('doctor')),
             ],
             'password' => 'required|string|min:8',
             'phone' => 'required|string|max:20',

@@ -24,6 +24,10 @@ class DatabaseSeeder extends Seeder
             PatientSeeder::class,
             DiseaseSeeder::class,
             MedicationSeeder::class,
+            DoctorSeeder::class,
+            SpecialtySeeder::class,
+            EstablishmentSeeder::class,
+            AddressSeeder::class,
         ]);
     }
 }

@@ -7,7 +7,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
 
-class AllergyRequest extends FormRequest
+class DoctorRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -37,8 +37,15 @@ class AllergyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'allergy_name' => 'required|string|max:255',
-            'description' => 'required|string'
+            'education' => 'required|string|max:255',
+            'consultation_cost' => 'required|numeric|min:0',
+            'professional_license' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('doctors', 'professional_license')->ignore($this->route('doctor'), 'user_id'),
+            ],
+
         ];
     }
 }

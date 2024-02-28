@@ -7,7 +7,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
 
-class AllergyRequest extends FormRequest
+class SpecialtyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -37,8 +37,8 @@ class AllergyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'allergy_name' => 'required|string|max:255',
-            'description' => 'required|string'
+            'specialty_name' => 'required|string|max:255',
+            'description' => 'required|string',
         ];
     }
 }

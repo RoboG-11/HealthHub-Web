@@ -7,7 +7,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
 
-class AllergyRequest extends FormRequest
+class AddressRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -17,9 +17,6 @@ class AllergyRequest extends FormRequest
         return true;
     }
 
-    /**
-     * Handle a failed validation attempt.
-     */
     protected function failedValidation(Validator $validator)
     {
         throw new ValidationException($validator, response()->json([
@@ -37,8 +34,13 @@ class AllergyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'allergy_name' => 'required|string|max:255',
-            'description' => 'required|string'
+            'street' => 'required|string',
+            'interior_number' => 'nullable|integer',
+            'exterior_number' => 'required|integer',
+            'neighborhood' => 'required|string',
+            'zip_code' => 'required|integer',
+            'city' => 'required|string',
+            'country' => 'required|string',
         ];
     }
 }

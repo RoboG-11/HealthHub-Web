@@ -7,7 +7,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
 
-class AllergyRequest extends FormRequest
+class EstablishmentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -37,8 +37,10 @@ class AllergyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'allergy_name' => 'required|string|max:255',
-            'description' => 'required|string'
+            'establishment_name' => 'required|string|max:255',
+            'establishment_type' => 'required|string|max:255',
+            'website_url' => 'nullable|string|max:255',
+            'address_id' => 'required|integer|',
         ];
     }
 }

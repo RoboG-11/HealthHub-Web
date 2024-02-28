@@ -57,4 +57,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(Patient::class);
     }
+
+    // NOTE: Relación con la tabla doctors - 1 a 1
+    public function doctor(): HasOne
+    {
+        return $this->hasOne(Doctor::class);
+    }
 }
