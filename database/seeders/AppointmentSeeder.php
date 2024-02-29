@@ -19,7 +19,7 @@ class AppointmentSeeder extends Seeder
             'appointment_datetime' => '2024-02-28',
             'link' => null,
             'status' => 'scheduled',
-            'Reason' => 'consulta general',
+            'reason' => 'consulta general',
             'consultation_cost' => 500.00
         ]);
     }
