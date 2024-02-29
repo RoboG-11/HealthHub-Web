@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Doctor extends Model
 {
@@ -40,8 +41,13 @@ class Doctor extends Model
         return $this->belongsToMany(Establishment::class);
     }
 
-    public function appointment()
+    public function appointment(): HasMany
     {
         return $this->hasMany(Appointment::class, 'doctor_id');
+    }
+
+    public function schedules(): HasMany
+    {
+        return $this->hasMany(Schedule::class, 'doctor_id', 'user_id');
     }
 }

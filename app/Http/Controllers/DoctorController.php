@@ -6,6 +6,7 @@ use App\Http\Requests\DoctorRequest;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\DoctorResource;
 use App\Models\Doctor;
+use App\Models\Schedule;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
@@ -88,6 +89,17 @@ class DoctorController extends Controller
             $doctorData['consultation_cost'] = $doctorRequest->input('consultation_cost');
 
             $doctor = Doctor::create($doctorData);
+
+            $daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+
+            foreach ($daysOfWeek as $day) {
+                $schedule = new Schedule();
+                $schedule->start_time = null;
+                $schedule->end_time = null;
+                $schedule->day_of_week = $day;
+                $schedule->doctor_id = $user->id;
+                $schedule->save();
+            }
 
             DB::commit();
 

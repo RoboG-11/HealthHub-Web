@@ -23,6 +23,7 @@ class DoctorResource extends JsonResource
             'personal_information' => new UserResource($this->whenLoaded('user')),
             'specialties' => SpecialtyResource::collection($this->specialties),
             'establishments' => EstablishmentResource::collection($this->establishments),
+            'schedules' => $this->schedules
         ];
     }
 }

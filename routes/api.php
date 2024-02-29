@@ -8,12 +8,14 @@ use App\Http\Controllers\DiseaseController;
 use App\Http\Controllers\DiseasePatientController;
 use App\Http\Controllers\DoctorController;
 use App\Http\Controllers\DoctorEstablishmentController;
+use App\Http\Controllers\DoctorScheduleController;
 use App\Http\Controllers\DoctorSpecialtyController;
 use App\Http\Controllers\EstablishmentController;
 use App\Http\Controllers\MedicationController;
 use App\Http\Controllers\MedicationPatientController;
 use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\PatientController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\SummaryController;
 use App\Http\Controllers\UserController;
@@ -52,6 +54,7 @@ Route::resource('/doctor_establishment', DoctorEstablishmentController::class);
 Route::resource('/appointments', AppointmentController::class);
 Route::resource('/medicines', MedicineController::class);
 Route::resource('/summaries', SummaryController::class);
+Route::resource('/schedules', ScheduleController::class);
 
 
 // Route::middleware('auth:sanctum')->get('/test', function (Request $request) {
