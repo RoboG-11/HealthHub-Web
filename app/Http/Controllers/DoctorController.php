@@ -211,26 +211,4 @@ class DoctorController extends Controller
             ], 500);
         }
     }
-
-    // BUG: Se debe de agregar el LOGIN igual qu al paciente????
-    // public function login(Request $request)
-    // {
-    //     $credentials = $request->only('email', 'password');
-
-    //     if (Auth::attempt($credentials)) {
-    //         $user = User::find(Auth::id());
-    //         $token = $user->createToken('API TOKEN')->plainTextToken;
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'token' => $token,
-    //             'user' => $user
-    //         ], 200);
-    //     }
-
-    //     return response()->json([
-    //         'success' => false,
-    //         'message' => 'Credenciales inválidas'
-    //     ], 401);
-    // }
 }

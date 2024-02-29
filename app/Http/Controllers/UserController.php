@@ -8,8 +8,11 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
+
 
 class UserController extends Controller
 {
@@ -374,5 +377,59 @@ class UserController extends Controller
                 'message' => 'Internal server error'
             ], 500);
         }
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/api/login",
+     *     summary="Iniciar sesión",
+     *     description="Inicia sesión con las credenciales de usuario y devuelve un token de autenticación",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Credenciales de usuario",
+     *         @OA\JsonContent(
+     *             required={"email","password"},
+     *             @OA\Property(property="email", type="string", format="email", example="usuario@example.com"),
+     *             @OA\Property(property="password", type="string", format="password", example="contraseña")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Operación exitosa",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="token", type="string", example="TOKEN_DE_AUTENTICACION"),
+     *             @OA\Property(property="user", type="object", description="Datos del usuario")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="Credenciales inválidas",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Credenciales inválidas")
+     *         )
+     *     )
+     * )
+     */
+    public function login(Request $request)
+    {
+        $credentials = $request->only('email', 'password');
+
+        if (Auth::attempt($credentials)) {
+            $user = User::find(Auth::id());
+            $token = $user->createToken('API TOKEN')->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'token' => $token,
+                'user' => $user
+            ], 200);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Credenciales inválidas'
+        ], 401);
     }
 }

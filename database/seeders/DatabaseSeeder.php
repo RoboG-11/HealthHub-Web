@@ -28,6 +28,9 @@ class DatabaseSeeder extends Seeder
             SpecialtySeeder::class,
             EstablishmentSeeder::class,
             AddressSeeder::class,
+            AppointmentSeeder::class,
+            MedicineSeeder::class,
+            SummarySeeder::class,
         ]);
     }
 }

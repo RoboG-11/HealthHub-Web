@@ -3,6 +3,7 @@
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AllergyController;
 use App\Http\Controllers\AllergyPatientController;
+use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\DiseaseController;
 use App\Http\Controllers\DiseasePatientController;
 use App\Http\Controllers\DoctorController;
@@ -11,8 +12,10 @@ use App\Http\Controllers\DoctorSpecialtyController;
 use App\Http\Controllers\EstablishmentController;
 use App\Http\Controllers\MedicationController;
 use App\Http\Controllers\MedicationPatientController;
+use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\SpecialtyController;
+use App\Http\Controllers\SummaryController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -46,13 +49,16 @@ Route::resource('/doctor_specialty', DoctorSpecialtyController::class);
 Route::resource('/establishments', EstablishmentController::class);
 Route::resource('/addresses', AddressController::class);
 Route::resource('/doctor_establishment', DoctorEstablishmentController::class);
+Route::resource('/appointments', AppointmentController::class);
+Route::resource('/medicines', MedicineController::class);
+Route::resource('/summaries', SummaryController::class);
 
 
 // Route::middleware('auth:sanctum')->get('/test', function (Request $request) {
 //     return $request->user();
 // });
 
-// Route::post('/patients/login', [PatientController::class, 'login']);
+// Route::post('/users/login', [UserController::class, 'login']);
 
 // TEST: Google
 // use Laravel\Socialite\Facades\Socialite;
