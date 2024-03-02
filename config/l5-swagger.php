@@ -51,7 +51,7 @@ return [
              * Route for accessing parsed swagger annotations.
             */
             // 'docs' => 'docs',
-            'docs' => 'https://healthhub-i0f3.onrender.com/api/oauth2-callbackdocs',
+            'docs' => 'https://healthhub-i0f3.onrender.com/api/documentation',
 
             /*
              * Route for Oauth2 authentication callback.
