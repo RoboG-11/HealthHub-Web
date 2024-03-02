@@ -50,12 +50,14 @@ return [
             /*
              * Route for accessing parsed swagger annotations.
             */
-            'docs' => 'docs',
+            // 'docs' => 'docs',
+            'docs' => 'https://healthhub-i0f3.onrender.com/api/oauth2-callbackdocs',
 
             /*
              * Route for Oauth2 authentication callback.
             */
-            'oauth2_callback' => 'api/oauth2-callback',
+            // 'oauth2_callback' => 'api/oauth2-callback',
+            'oauth2_callback' => 'https://healthhub-i0f3.onrender.com/api/oauth2-callback',
 
             /*
              * Middleware allows to prevent unexpected access to API documentation
@@ -87,7 +89,8 @@ return [
             /*
              * Edit to set the api's base path
             */
-            'base' => env('L5_SWAGGER_BASE_PATH', null),
+            // 'base' => env('L5_SWAGGER_BASE_PATH', null),
+            'base' => 'https://healthhub-i0f3.onrender.com',
 
             /*
              * Edit to set path where swagger ui assets should be stored
@@ -197,8 +200,7 @@ return [
                     'name' => 'Authorization', // The name of the header or query parameter to be used.
                     'in' => 'header', // The location of the API key. Valid values are "query" or "header".
                 ],
-                */
-            ],
+                */],
             'security' => [
                 /*
                  * Examples of Securities
@@ -211,8 +213,7 @@ return [
                     ],
 
                     'passport' => []
-                    */
-                ],
+                    */],
             ],
         ],
 
