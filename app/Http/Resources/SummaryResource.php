@@ -18,7 +18,7 @@ class SummaryResource extends JsonResource
             'id' => $this->id,
             'appointment_id' => $this->appointment_id,
             'diagnosis' => $this->diagnosis,
-            'medicine' => $this->medicine
+            'medicines' => $this->medicines
         ];
     }
 }

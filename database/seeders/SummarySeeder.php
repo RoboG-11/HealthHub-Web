@@ -16,7 +16,7 @@ class SummarySeeder extends Seeder
         Summary::create([
             'appointment_id' => 1,
             'diagnosis' => 'Todo bien pa!',
-            'medicine_id' => 3
+            'medicine_id' => 2
         ]);
     }
 }

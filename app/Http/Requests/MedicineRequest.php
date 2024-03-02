@@ -34,6 +34,7 @@ class MedicineRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'summary_id' => 'nullable|exists:summaries,id',
             'medicine_name' => 'required|string|max:255',
             'dosage' => 'required|string|max:255',
             'frequency' => 'required|string|max:255',

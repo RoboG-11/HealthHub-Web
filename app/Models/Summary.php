@@ -5,13 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Summary extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'appointment_id', 'diagnosis', 'medicine_id'
+        'appointment_id', 'diagnosis'
     ];
 
     protected $hidden = [
@@ -24,8 +25,8 @@ class Summary extends Model
         return $this->belongsTo(Appointment::class);
     }
 
-    public function medicine(): BelongsTo
+    public function medicines(): HasMany
     {
-        return $this->belongsTo(Medicine::class);
+        return $this->hasMany(Medicine::class);
     }
 }

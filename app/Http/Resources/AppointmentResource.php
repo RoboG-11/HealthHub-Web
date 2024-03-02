@@ -23,6 +23,8 @@ class AppointmentResource extends JsonResource
             'status' => $this->status,
             'reason' => $this->reason,
             'consultation_cost' => $this->consultation_cost,
+            // 'summary' => $this->summary
+            'summary' => new SummaryResource($this->summary),
         ];
     }
 }

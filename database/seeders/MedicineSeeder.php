@@ -14,6 +14,7 @@ class MedicineSeeder extends Seeder
     public function run(): void
     {
         Medicine::create([
+            'summary_id' => 1,
             'medicine_name' => 'Ibuprofen',
             'dosage' => '200mg',
             'frequency' => 'Twice daily',
@@ -22,6 +23,7 @@ class MedicineSeeder extends Seeder
         ]);
 
         Medicine::create([
+            'summary_id' => 1,
             'medicine_name' => 'Paracetamol',
             'dosage' => '500mg',
             'frequency' => 'As needed',
