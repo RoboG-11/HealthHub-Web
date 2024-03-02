@@ -18,7 +18,32 @@ use Illuminate\Support\Facades\Log;
 class DoctorController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Obtiene una lista paginada de doctores.
+     *
+     * @OA\Get(
+     *     path="/api/doctors",
+     *     summary="Obtiene una lista paginada de doctores",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista paginada de doctores",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/DoctorResource")),
+     *             @OA\Property(property="links", type="object", @OA\Property(property="first", type="string"), @OA\Property(property="last", type="string"), @OA\Property(property="prev", type="string"), @OA\Property(property="next", type="string")),
+     *             @OA\Property(property="meta", type="object", @OA\Property(property="current_page", type="integer"), @OA\Property(property="from", type="integer"), @OA\Property(property="last_page", type="integer"), @OA\Property(property="links", type="array", @OA\Items(type="string")), @OA\Property(property="path", type="string"), @OA\Property(property="per_page", type="integer"), @OA\Property(property="to", type="integer"), @OA\Property(property="total", type="integer"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
+     *     )
+     * )
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -60,7 +85,68 @@ class DoctorController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crea un nuevo doctor.
+     *
+     * @OA\Post(
+     *     path="/api/doctors",
+     *     summary="Crea un nuevo doctor",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos del doctor a crear",
+     *         @OA\JsonContent(
+     *             required={
+     *                 "name",
+     *                 "last_name",
+     *                 "email",
+     *                 "password",
+     *                 "phone",
+     *                 "sex",
+     *                 "age",
+     *                 "date_of_birth",
+     *                 "link_photo",
+     *                 "professional_license",
+     *                 "education",
+     *                 "consultation_cost"
+     *             },
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="last_name", type="string"),
+     *             @OA\Property(property="email", type="string", format="email"),
+     *             @OA\Property(property="password", type="string"),
+     *             @OA\Property(property="phone", type="string"),
+     *             @OA\Property(property="sex", type="string", enum={"M", "F"}),
+     *             @OA\Property(property="age", type="integer"),
+     *             @OA\Property(property="date_of_birth", type="string", format="date"),
+     *             @OA\Property(property="link_photo", type="string"),
+     *             @OA\Property(property="professional_license", type="string"),
+     *             @OA\Property(property="education", type="string"),
+     *             @OA\Property(property="consultation_cost", type="number", format="float")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Doctor creado exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 ref="#/components/schemas/DoctorResource"
+     *             ),
+     *             @OA\Property(property="token", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
+     *     )
+     * )
+     *
+     * @param DoctorRequest $doctorRequest
+     * @param UserRequest $userRequest
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(DoctorRequest $doctorRequest, UserRequest $userRequest): JsonResponse
     {
@@ -125,7 +211,49 @@ class DoctorController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Muestra los detalles de un doctor.
+     *
+     * @OA\Get(
+     *     path="/api/doctors/{id}",
+     *     summary="Muestra los detalles de un doctor",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del doctor a mostrar",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Doctor encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 ref="#/components/schemas/DoctorResource"
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Doctor no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Doctor no encontrado")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(string $id): JsonResponse
     {
@@ -151,8 +279,65 @@ class DoctorController extends Controller
     }
 
     /**
-     * 
-     * Update the specified resource in storage.
+     * Actualiza los datos de un doctor y su usuario asociado.
+     *
+     * @OA\Put(
+     *     path="/api/doctors/{id}",
+     *     summary="Actualiza los datos de un doctor y su usuario asociado",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del doctor a actualizar",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos del doctor a actualizar",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="professional_license", type="string"),
+     *             @OA\Property(property="education", type="string"),
+     *             @OA\Property(property="consultation_cost", type="number", format="float"),
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="last_name", type="string"),
+     *             @OA\Property(property="email", type="string", format="email"),
+     *             @OA\Property(property="phone", type="string"),
+     *             @OA\Property(property="sex", type="string", enum={"M", "F"}),
+     *             @OA\Property(property="age", type="integer"),
+     *             @OA\Property(property="date_of_birth", type="string", format="date"),
+     *             @OA\Property(property="link_photo", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Doctor y usuario actualizados exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/DoctorResource"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Doctor o usuario no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Doctor o usuario no encontrado")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     *
+     * @param DoctorRequest $doctorRequest
+     * @param UserRequest $userRequest
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(DoctorRequest $doctorRequest, UserRequest $userRequest, string $id)
     {
@@ -196,7 +381,45 @@ class DoctorController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina un doctor y su usuario asociado.
+     *
+     * @OA\Delete(
+     *     path="/api/doctors/{id}",
+     *     summary="Elimina un doctor y su usuario asociado",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del doctor a eliminar",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Doctor y usuario eliminados exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Doctor no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Doctor no encontrado")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(string $id): JsonResponse
     {

@@ -14,7 +14,55 @@ use Illuminate\Support\Facades\Log;
 class ScheduleController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Obtiene una lista paginada de horarios.
+     *
+     * @OA\Get(
+     *     path="/api/schedules",
+     *     summary="Obtiene una lista paginada de horarios",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de horarios obtenida correctamente",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/ScheduleResource")
+     *             ),
+     *             @OA\Property(
+     *                 property="links",
+     *                 type="object",
+     *                 @OA\Property(property="first", type="string", example="/api/schedules?page=1"),
+     *                 @OA\Property(property="last", type="string", example="/api/schedules?page=last_page"),
+     *                 @OA\Property(property="prev", type="string", example="/api/schedules?page=prev_page"),
+     *                 @OA\Property(property="next", type="string", example="/api/schedules?page=next_page")
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 @OA\Property(property="current_page", type="integer", example="current_page"),
+     *                 @OA\Property(property="from", type="integer", example="from_item"),
+     *                 @OA\Property(property="last_page", type="integer", example="last_page"),
+     *                 @OA\Property(property="links", type="array", @OA\Items(type="string")),
+     *                 @OA\Property(property="path", type="string", example="/api/schedules"),
+     *                 @OA\Property(property="per_page", type="integer", example="per_page"),
+     *                 @OA\Property(property="to", type="integer", example="to_item"),
+     *                 @OA\Property(property="total", type="integer", example="total_items")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -56,7 +104,41 @@ class ScheduleController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crea un nuevo horario.
+     *
+     * @OA\Post(
+     *     path="/api/schedules",
+     *     summary="Crea un nuevo horario",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos del horario a crear",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="doctor_id", type="integer", example="1"),
+     *             @OA\Property(property="start_time", type="string", format="time", example="08:00:00"),
+     *             @OA\Property(property="end_time", type="string", format="time", example="09:00:00"),
+     *             @OA\Property(property="day_of_week", type="string", example="Monday")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Horario creado correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/ScheduleResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor.")
+     *         )
+     *     )
+     * )
+     *
+     * @param ScheduleRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(ScheduleRequest $request): JsonResponse
     {
@@ -77,7 +159,39 @@ class ScheduleController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Muestra los horarios de un doctor específico.
+     *
+     * @OA\Get(
+     *     path="/api/schedules/{doctor_id}",
+     *     summary="Muestra los horarios de un doctor específico",
+     *     @OA\Parameter(
+     *         name="doctor_id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del doctor",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Horarios obtenidos correctamente",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/ScheduleResource"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     *
+     * @param string $doctor_id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(string $doctor_id): JsonResponse
     {
@@ -98,8 +212,61 @@ class ScheduleController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza un horario existente.
+     *
+     * @OA\Put(
+     *     path="/api/schedules/{id}",
+     *     summary="Actualiza un horario existente",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del horario a actualizar",
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos del horario a actualizar",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="doctor_id", type="integer", example="1"),
+     *             @OA\Property(property="patient_id", type="integer", example="2"),
+     *             @OA\Property(property="date", type="string", format="date", example="2024-03-01"),
+     *             @OA\Property(property="time", type="string", format="time", example="08:00:00")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Horario actualizado correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/ScheduleResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Horario no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Horario no encontrado")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     *
+     * @param ScheduleRequest $request
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
      */
+
     public function update(ScheduleRequest $request, string $id): JsonResponse
     {
         try {
@@ -126,7 +293,47 @@ class ScheduleController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina un horario existente.
+     *
+     * @OA\Delete(
+     *     path="/api/schedules/{id}",
+     *     summary="Elimina un horario existente",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del horario a eliminar",
+     *         @OA\Schema(
+     *             type="string"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Horario eliminado correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Horario no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Horario no encontrado")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(string $id): JsonResponse
     {

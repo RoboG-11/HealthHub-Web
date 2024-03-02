@@ -5,6 +5,16 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @OA\Schema(
+ *     schema="DoctorEstablishmentResource",
+ *     title="DoctorEstablishmentResource",
+ *     description="Recursos de la relación entre un doctor y un establecimiento médico.",
+ *     @OA\Property(property="id", type="integer", example="1"),
+ *     @OA\Property(property="doctor_user_id", type="integer", example="1"),
+ *     @OA\Property(property="establishment_id", type="integer", example="1"),
+ * )
+ */
 class DoctorEstablishmentResource extends JsonResource
 {
     /**

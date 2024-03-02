@@ -14,7 +14,55 @@ use Illuminate\Support\Facades\Log;
 class MedicineController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Obtiene una lista paginada de medicamentos.
+     *
+     * @OA\Get(
+     *     path="/api/medicines",
+     *     summary="Obtiene una lista paginada de medicamentos",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de medicamentos obtenida correctamente",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(
+     *                 property="data",
+     *                 type="array",
+     *                 @OA\Items(ref="#/components/schemas/MedicineResource")
+     *             ),
+     *             @OA\Property(
+     *                 property="links",
+     *                 type="object",
+     *                 @OA\Property(property="first", type="string", example="/api/medicines?page=1"),
+     *                 @OA\Property(property="last", type="string", example="/api/medicines?page=last_page"),
+     *                 @OA\Property(property="prev", type="string", example="/api/medicines?page=prev_page"),
+     *                 @OA\Property(property="next", type="string", example="/api/medicines?page=next_page")
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 @OA\Property(property="current_page", type="integer", example="current_page"),
+     *                 @OA\Property(property="from", type="integer", example="from_item"),
+     *                 @OA\Property(property="last_page", type="integer", example="last_page"),
+     *                 @OA\Property(property="links", type="array", @OA\Items(type="string")),
+     *                 @OA\Property(property="path", type="string", example="/api/medicines"),
+     *                 @OA\Property(property="per_page", type="integer", example="per_page"),
+     *                 @OA\Property(property="to", type="integer", example="to_item"),
+     *                 @OA\Property(property="total", type="integer", example="total_items")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -56,7 +104,42 @@ class MedicineController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * @OA\Post(
+     *     path="/api/medicines",
+     *     summary="Crea un nuevo medicamento",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos del medicamento a crear",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="summary_id", type="integer", example="1"),
+     *             @OA\Property(property="medicine_name", type="string", example="Paracetamol"),
+     *             @OA\Property(property="dosage", type="string", example="500 mg"),
+     *             @OA\Property(property="frequency", type="string", example="Twice daily"),
+     *             @OA\Property(property="duration", type="string", example="7 days"),
+     *             @OA\Property(property="notes", type="string", example="Take with food.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Medicamento creado correctamente",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/MedicineResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor.")
+     *         )
+     *     )
+     * )
+     *
+     * @param MedicineRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(MedicineRequest $request): JsonResponse
     {
@@ -77,7 +160,48 @@ class MedicineController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * @OA\Get(
+     *     path="/api/medicines/{id}",
+     *     summary="Obtiene un medicamento por su ID",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del medicamento",
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Medicamento encontrado",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/MedicineResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Medicamento no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Medicine not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
+     *     )
+     * )
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(string $id): JsonResponse
     {
@@ -103,7 +227,62 @@ class MedicineController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza un medicamento existente.
+     *
+     * @OA\Put(
+     *     path="/api/medicines/{id}",
+     *     summary="Actualiza un medicamento existente",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del medicamento a actualizar",
+     *         @OA\Schema(
+     *             type="integer",
+     *             format="int64"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos del medicamento a actualizar",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="summary_id", type="integer", example="1"),
+     *             @OA\Property(property="medicine_name", type="string", example="Ibuprofeno"),
+     *             @OA\Property(property="dosage", type="string", example="1 tableta"),
+     *             @OA\Property(property="frequency", type="string", example="Cada 8 horas"),
+     *             @OA\Property(property="duration", type="string", example="5 días"),
+     *             @OA\Property(property="notes", type="string", example="Tomar con comida")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Medicamento actualizado correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/MedicineResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Medicamento no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Medicine not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
+     *     )
+     * )
+     *
+     * @param MedicineRequest $request
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(MedicineRequest $request, string $id): JsonResponse
     {
@@ -133,7 +312,45 @@ class MedicineController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina un medicamento existente por su ID.
+     *
+     * @OA\Delete(
+     *     path="/api/medicines/{id}",
+     *     summary="Elimina un medicamento existente por su ID",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID del medicamento",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Medicamento eliminado exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Medicamento no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Medicine not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
+     *     )
+     * )
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(string $id): JsonResponse
     {

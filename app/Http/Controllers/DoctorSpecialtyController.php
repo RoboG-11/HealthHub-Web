@@ -14,7 +14,47 @@ use Illuminate\Support\Facades\Log;
 class DoctorSpecialtyController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Obtiene una lista paginada de las especialidades de los doctores.
+     *
+     * @OA\Get(
+     *     path="/api/doctor-specialties",
+     *     summary="Obtiene una lista paginada de las especialidades de los doctores",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de especialidades de los doctores obtenida correctamente",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/DoctorSpecialtyResource")),
+     *             @OA\Property(property="links", type="object",
+     *                 @OA\Property(property="first", type="string"),
+     *                 @OA\Property(property="last", type="string"),
+     *                 @OA\Property(property="prev", type="string"),
+     *                 @OA\Property(property="next", type="string")
+     *             ),
+     *             @OA\Property(property="meta", type="object",
+     *                 @OA\Property(property="current_page", type="integer"),
+     *                 @OA\Property(property="from", type="integer"),
+     *                 @OA\Property(property="last_page", type="integer"),
+     *                 @OA\Property(property="links", type="array", @OA\Items()),
+     *                 @OA\Property(property="path", type="string"),
+     *                 @OA\Property(property="per_page", type="integer"),
+     *                 @OA\Property(property="to", type="integer"),
+     *                 @OA\Property(property="total", type="integer")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -56,7 +96,40 @@ class DoctorSpecialtyController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crea una nueva relación entre doctor y especialidad.
+     *
+     * @OA\Post(
+     *     path="/api/doctor-specialties",
+     *     summary="Crea una nueva relación entre doctor y especialidad",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos de la relación entre doctor y especialidad a crear",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="doctor_user_id", type="integer", example="1"),
+     *             @OA\Property(property="specialty_id", type="integer", example="1")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Relación entre doctor y especialidad creada correctamente",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/DoctorSpecialtyResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error.")
+     *         )
+     *     )
+     * )
+     *
+     * @param DoctorSpecialtyRequest $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(DoctorSpecialtyRequest $request): JsonResponse
     {
@@ -77,7 +150,49 @@ class DoctorSpecialtyController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Obtiene una relación entre doctor y especialidad por su ID.
+     *
+     * @OA\Get(
+     *     path="/api/doctor-specialties/{id}",
+     *     summary="Obtiene una relación entre doctor y especialidad por su ID",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la relación entre doctor y especialidad",
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Relación entre doctor y especialidad obtenida correctamente",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/DoctorSpecialtyResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Relación entre doctor y especialidad no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="DoctorSpecialty not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
+     *     )
+     * )
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(string $id): JsonResponse
     {
@@ -103,7 +218,58 @@ class DoctorSpecialtyController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza una relación entre doctor y especialidad por su ID.
+     *
+     * @OA\Put(
+     *     path="/api/doctor-specialties/{id}",
+     *     summary="Actualiza una relación entre doctor y especialidad por su ID",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la relación entre doctor y especialidad",
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos de la relación entre doctor y especialidad a actualizar",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="doctor_user_id", type="integer", example="1"),
+     *             @OA\Property(property="specialty_id", type="integer", example="1")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Relación entre doctor y especialidad actualizada correctamente",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/DoctorSpecialtyResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Relación entre doctor y especialidad no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="DoctorSpecialty not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
+     *     )
+     * )
+     *
+     * @param DoctorSpecialtyRequest $request
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(DoctorSpecialtyRequest $request, string $id): JsonResponse
     {
@@ -136,7 +302,48 @@ class DoctorSpecialtyController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina una relación entre doctor y especialidad por su ID.
+     *
+     * @OA\Delete(
+     *     path="/api/doctor-specialties/{id}",
+     *     summary="Elimina una relación entre doctor y especialidad por su ID",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la relación entre doctor y especialidad",
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Relación entre doctor y especialidad eliminada correctamente",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example="true")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Relación entre doctor y especialidad no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="DoctorSpecialty not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
+     *     )
+     * )
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(string $id): JsonResponse
     {

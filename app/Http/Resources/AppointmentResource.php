@@ -5,6 +5,18 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @OA\Schema(
+ *     schema="AppointmentResource",
+ *     title="Appointment Resource",
+ *     description="Appointment resource schema",
+ *     @OA\Property(property="id", type="integer", example="1"),
+ *     @OA\Property(property="user_id", type="integer", example="1"),
+ *     @OA\Property(property="patient_id", type="integer", example="1"),
+ *     @OA\Property(property="date", type="string", format="date-time", example="2024-03-02 10:00:00"),
+ *     @OA\Property(property="notes", type="string", example="Checkup"),
+ * )
+ */
 class AppointmentResource extends JsonResource
 {
     /**

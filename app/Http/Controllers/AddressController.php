@@ -14,7 +14,32 @@ use Illuminate\Support\Facades\Log;
 class AddressController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Obtiene una lista paginada de direcciones.
+     *
+     * @OA\Get(
+     *     path="/api/addresses",
+     *     summary="Obtiene una lista paginada de direcciones",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista paginada de direcciones",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/AddressResource")),
+     *             @OA\Property(property="links", type="object", @OA\Property(property="first", type="string"), @OA\Property(property="last", type="string"), @OA\Property(property="prev", type="string"), @OA\Property(property="next", type="string")),
+     *             @OA\Property(property="meta", type="object", @OA\Property(property="current_page", type="integer"), @OA\Property(property="from", type="integer"), @OA\Property(property="last_page", type="integer"), @OA\Property(property="links", type="array", @OA\Items(type="string")), @OA\Property(property="path", type="string"), @OA\Property(property="per_page", type="integer"), @OA\Property(property="to", type="integer"), @OA\Property(property="total", type="integer"))
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
+     *     )
+     * )
+     *
+     * @return \Illuminate\Http\JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -56,7 +81,43 @@ class AddressController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Crea una nueva dirección.
+     *
+     * @OA\Post(
+     *     path="/api/addresses",
+     *     summary="Crea una nueva dirección",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos de la dirección a crear",
+     *         @OA\JsonContent(
+     *             required={"street", "city", "state", "zip_code", "country"},
+     *             @OA\Property(property="street", type="string", example="123 Main St"),
+     *             @OA\Property(property="city", type="string", example="Springfield"),
+     *             @OA\Property(property="state", type="string", example="IL"),
+     *             @OA\Property(property="zip_code", type="string", example="12345"),
+     *             @OA\Property(property="country", type="string", example="USA"),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Dirección creada exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/AddressResource"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor.")
+     *         )
+     *     )
+     * )
+     *
+     * @param  \App\Http\Requests\AddressRequest  $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function store(AddressRequest $request): JsonResponse
     {
@@ -77,7 +138,46 @@ class AddressController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Obtiene una dirección por su ID.
+     *
+     * @OA\Get(
+     *     path="/api/addresses/{id}",
+     *     summary="Obtiene una dirección por su ID",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la dirección",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Dirección encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/AddressResource"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Dirección no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Address not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
+     *     )
+     * )
+     *
+     * @param  string  $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(string $id): JsonResponse
     {
@@ -103,7 +203,59 @@ class AddressController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Actualiza una dirección existente por su ID.
+     *
+     * @OA\Put(
+     *     path="/api/addresses/{id}",
+     *     summary="Actualiza una dirección existente por su ID",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la dirección",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos de la dirección a actualizar",
+     *         @OA\JsonContent(
+     *             required={"street", "city", "state", "zip_code", "country"},
+     *             @OA\Property(property="street", type="string", example="123 Main St"),
+     *             @OA\Property(property="city", type="string", example="Springfield"),
+     *             @OA\Property(property="state", type="string", example="IL"),
+     *             @OA\Property(property="zip_code", type="string", example="12345"),
+     *             @OA\Property(property="country", type="string", example="USA"),
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Dirección actualizada exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/AddressResource"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Dirección no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Address not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
+     *     )
+     * )
+     *
+     * @param  \App\Http\Requests\AddressRequest  $request
+     * @param  string  $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function update(AddressRequest $request, string $id): JsonResponse
     {
@@ -133,7 +285,45 @@ class AddressController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Elimina una dirección por su ID.
+     *
+     * @OA\Delete(
+     *     path="/api/addresses/{id}",
+     *     summary="Elimina una dirección por su ID",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID de la dirección",
+     *         required=true,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Dirección eliminada exitosamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Dirección no encontrada",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Address not found")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Internal server error")
+     *         )
+     *     )
+     * )
+     *
+     * @param  string  $id
+     * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(string $id): JsonResponse
     {

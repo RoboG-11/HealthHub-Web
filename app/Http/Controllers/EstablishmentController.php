@@ -13,6 +13,45 @@ use Illuminate\Support\Facades\Log;
 
 class EstablishmentController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/establishments",
+     *     summary="Obtiene una lista paginada de los establecimientos",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de establecimientos obtenida correctamente",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", type="array", @OA\Items(ref="#/components/schemas/EstablishmentResource")),
+     *             @OA\Property(property="links", type="object",
+     *                 @OA\Property(property="first", type="string"),
+     *                 @OA\Property(property="last", type="string"),
+     *                 @OA\Property(property="prev", type="string"),
+     *                 @OA\Property(property="next", type="string")
+     *             ),
+     *             @OA\Property(property="meta", type="object",
+     *                 @OA\Property(property="current_page", type="integer"),
+     *                 @OA\Property(property="from", type="integer"),
+     *                 @OA\Property(property="last_page", type="integer"),
+     *                 @OA\Property(property="links", type="array", @OA\Items(type="object")),
+     *                 @OA\Property(property="path", type="string"),
+     *                 @OA\Property(property="per_page", type="integer"),
+     *                 @OA\Property(property="to", type="integer"),
+     *                 @OA\Property(property="total", type="integer")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     */
     public function index(): JsonResponse
     {
         try {
@@ -52,6 +91,43 @@ class EstablishmentController extends Controller
         }
     }
 
+    /**
+     * Crea un nuevo establecimiento.
+     *
+     * @OA\Post(
+     *     path="/api/establishments",
+     *     summary="Crea un nuevo establecimiento",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos del establecimiento a crear",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="name", type="string", example="Establecimiento"),
+     *             @OA\Property(property="address", type="string", example="Dirección"),
+     *             @OA\Property(property="phone", type="string", example="1234567890"),
+     *             @OA\Property(property="email", type="string", example="info@example.com")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Establecimiento creado correctamente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/EstablishmentResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     *
+     * @param EstablishmentRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(EstablishmentRequest $request): JsonResponse
     {
         try {
@@ -70,6 +146,51 @@ class EstablishmentController extends Controller
         }
     }
 
+    /**
+     * Muestra un establecimiento específico.
+     *
+     * @OA\Get(
+     *     path="/api/establishments/{id}",
+     *     summary="Muestra un establecimiento específico",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del establecimiento a mostrar",
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Establecimiento encontrado",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/EstablishmentResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Establecimiento no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Establecimiento no encontrado")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show(string $id): JsonResponse
     {
         try {
@@ -93,6 +214,61 @@ class EstablishmentController extends Controller
         }
     }
 
+    /**
+     * Actualiza un establecimiento existente.
+     *
+     * @OA\Put(
+     *     path="/api/establishments/{id}",
+     *     summary="Actualiza un establecimiento existente",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del establecimiento a actualizar",
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         description="Datos del establecimiento a actualizar",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="establishment_name", type="string", example="Nuevo nombre"),
+     *             @OA\Property(property="establishment_type", type="string", example="Nuevo tipo"),
+     *             @OA\Property(property="website_url", type="string", example="https://nuevositio.com")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Establecimiento actualizado correctamente",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/EstablishmentResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Establecimiento no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Establecimiento no encontrado")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     *
+     * @param EstablishmentRequest $request
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(EstablishmentRequest $request, string $id): JsonResponse
     {
         try {
@@ -123,6 +299,50 @@ class EstablishmentController extends Controller
         }
     }
 
+    /**
+     * Elimina un establecimiento existente.
+     *
+     * @OA\Delete(
+     *     path="/api/establishments/{id}",
+     *     summary="Elimina un establecimiento existente",
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         description="ID del establecimiento a eliminar",
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Establecimiento eliminado correctamente",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="success", type="boolean", example="true")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Establecimiento no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Establecimiento no encontrado")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy(string $id): JsonResponse
     {
         try {
