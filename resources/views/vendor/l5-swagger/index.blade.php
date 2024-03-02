@@ -30,8 +30,8 @@
 <body>
 <div id="swagger-ui"></div>
 
-<script src="{{ l5_swagger_asset('https://healthhub-i0f3.onrender.com/https://healthhub-i0f3.onrender.com/api/documentation/asset/', 'swagger-ui-bundle.js') }}"></script>
-<script src="{{ l5_swagger_asset('https://healthhub-i0f3.onrender.com/https://healthhub-i0f3.onrender.com/api/documentation/asset/', 'swagger-ui-standalone-preset.js') }}"></script>
+<script src="{{ l5_swagger_asset($documentation, 'swagger-ui-bundle.js') }}"></script>
+<script src="{{ l5_swagger_asset($documentation, 'swagger-ui-standalone-preset.js') }}"></script>
 <script>
     window.onload = function() {
         // Build a system
