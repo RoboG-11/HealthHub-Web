@@ -19,6 +19,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  *     @OA\Property(property="sex", type="string", example="male"),
  *     @OA\Property(property="age", type="integer", example="30"),
  *     @OA\Property(property="date_of_birth", type="string", format="date", example="1990-01-01"),
+ *     @OA\Property(property="link_photo", type="string", example="http://example.com/photo.jpg"),
  * )
  */
 class UserResource extends JsonResource
@@ -39,7 +40,8 @@ class UserResource extends JsonResource
             'phone' => $this->phone,
             'sex' => $this->sex,
             'age' => $this->age,
-            'date_of_birth' => $this->date_of_birth
+            'date_of_birth' => $this->date_of_birth,
+            'link_photo' => $this->link_photo
         ];
     }
 }

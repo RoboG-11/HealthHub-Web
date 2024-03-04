@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\DoctorRequest;
+use App\Http\Requests\DoctorUpdateRequest;
 use App\Http\Requests\UserRequest;
+use App\Http\Requests\UserUpdateRequest;
+use App\Http\Resources\DoctorPublicResource;
 use App\Http\Resources\DoctorResource;
 use App\Models\Doctor;
 use App\Models\Schedule;
@@ -12,6 +15,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -339,11 +343,12 @@ class DoctorController extends Controller
      * @param string $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(DoctorRequest $doctorRequest, UserRequest $userRequest, string $id)
+
+    public function update(DoctorUpdateRequest $doctorRequest, UserUpdateRequest $userRequest)
     {
         try {
-            $doctor = Doctor::where('user_id', $id)->firstOrFail();
-            $user = User::findOrFail($doctor->user_id);
+            $doctor = Auth::user()->doctor;
+            $user = $doctor->user;
 
             $doctor->professional_license = $doctorRequest->input('professional_license');
             $doctor->education = $doctorRequest->input('education');
@@ -380,19 +385,13 @@ class DoctorController extends Controller
         }
     }
 
+
     /**
-     * Elimina un doctor y su usuario asociado.
+     * Elimina al doctor autenticado y su usuario asociado.
      *
      * @OA\Delete(
-     *     path="/api/doctors/{id}",
-     *     summary="Elimina un doctor y su usuario asociado",
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID del doctor a eliminar",
-     *         @OA\Schema(type="string")
-     *     ),
+     *     path="/api/doctors",
+     *     summary="Elimina al doctor autenticado y su usuario asociado",
      *     @OA\Response(
      *         response=200,
      *         description="Doctor y usuario eliminados exitosamente",
@@ -418,15 +417,14 @@ class DoctorController extends Controller
      *     )
      * )
      *
-     * @param string $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(): JsonResponse
     {
         try {
-            $doctor = Doctor::where('user_id', $id)->firstOrFail();
+            $doctor = Auth::user()->doctor;
 
-            $user = User::findOrFail($id);
+            $user = $doctor->user;
             $doctor->delete();
             $user->delete();
 
@@ -436,13 +434,112 @@ class DoctorController extends Controller
         } catch (ModelNotFoundException $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Doctor no encontrado'
+                'message' => 'Doctor not found'
             ], 404);
         } catch (\Exception $e) {
-            Log::error('Error al eliminar un doctor: ' . $e->getMessage());
+            Log::error('Error deleting doctor: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Error interno del servidor'
+                'message' => 'Internal server error'
+            ], 500);
+        }
+    }
+
+
+    /**
+     * Obtiene la información del doctor autenticado.
+     *
+     * @OA\Get(
+     *     path="/api/doctors/info",
+     *     summary="Obtiene la información del doctor autenticado",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Información del doctor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/DoctorResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Doctor no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Doctor no encontrado")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function info(): JsonResponse
+    {
+        try {
+            $doctor = Auth::user()->doctor;
+
+            if (!$doctor) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Doctor not found'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => new DoctorResource($doctor)
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error al obtener la información del doctor: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Internal server error'
+            ], 500);
+        }
+    }
+
+
+    public function doctors_publics(): JsonResponse
+    {
+        try {
+            $doctors = Doctor::paginate(20);
+            $doctors->getCollection()->transform(function ($doctor) {
+                return new DoctorPublicResource($doctor);
+            });
+
+            $pagination = [
+                'success' => true,
+                'data' => $doctors->items(),
+                'links' => [
+                    'first' => $doctors->url(1),
+                    'last' => $doctors->url($doctors->lastPage()),
+                    'prev' => $doctors->previousPageUrl(),
+                    'next' => $doctors->nextPageUrl(),
+                ],
+                'meta' => [
+                    'current_page' => $doctors->currentPage(),
+                    'from' => $doctors->firstItem(),
+                    'last_page' => $doctors->lastPage(),
+                    'path' => $doctors->url(1),
+                    'per_page' => $doctors->perPage(),
+                    'to' => $doctors->lastItem(),
+                    'total' => $doctors->total(),
+                ],
+            ];
+
+            return response()->json($pagination, 200);
+        } catch (QueryException $e) {
+            Log::error('Error en la consulta al obtener todos los doctores: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Internal server error'
             ], 500);
         }
     }

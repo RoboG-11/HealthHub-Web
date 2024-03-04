@@ -27,7 +27,8 @@ class MedicationPatientResource extends JsonResource
         return [
             'id' => $this->id,
             'patient_user_id' => $this->patient_user_id,
-            'medication_id' => $this->medication_id
+            'medication_id' => $this->medication_id,
+            'medication' => $this->medication
         ];
     }
 }

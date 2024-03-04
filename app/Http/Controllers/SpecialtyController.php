@@ -374,4 +374,43 @@ class SpecialtyController extends Controller
             ], 500);
         }
     }
+
+    public function specialties_public(): JsonResponse
+    {
+        try {
+            $specialties = Specialty::paginate(5);
+            $specialties->getCollection()->transform(function ($specialty) {
+                return new SpecialtyResource($specialty);
+            });
+
+            $pagination = [
+                'success' => true,
+                'data' => $specialties->items(),
+                'links' => [
+                    'first' => $specialties->url(1),
+                    'last' => $specialties->url($specialties->lastPage()),
+                    'prev' => $specialties->previousPageUrl(),
+                    'next' => $specialties->nextPageUrl(),
+                ],
+                'meta' => [
+                    'current_page' => $specialties->currentPage(),
+                    'from' => $specialties->firstItem(),
+                    'last_page' => $specialties->lastPage(),
+                    'links' => $specialties->getUrlRange(1, $specialties->lastPage()),
+                    'path' => $specialties->url(1),
+                    'per_page' => $specialties->perPage(),
+                    'to' => $specialties->lastItem(),
+                    'total' => $specialties->total(),
+                ],
+            ];
+
+            return response()->json($pagination, 200);
+        } catch (QueryException $e) {
+            Log::error('Error en la consulta al obtener todas las especialidades médicas: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error interno del servidor'
+            ], 500);
+        }
+    }
 }

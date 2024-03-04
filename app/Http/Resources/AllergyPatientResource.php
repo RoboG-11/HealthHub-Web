@@ -27,7 +27,8 @@ class AllergyPatientResource extends JsonResource
         return [
             'id' => $this->id,
             'patient_user_id' => $this->patient_user_id,
-            'allergy_id' => $this->allergy_id
+            'allergy_id' => $this->allergy_id,
+            'allergy' => $this->allergy
         ];
     }
 }

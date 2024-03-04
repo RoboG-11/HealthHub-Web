@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AddressRequest;
 use App\Http\Requests\EstablishmentRequest;
 use App\Http\Resources\EstablishmentResource;
+use App\Models\Address;
+use App\Models\DoctorEstablishment;
 use App\Models\Establishment;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
@@ -101,10 +104,17 @@ class EstablishmentController extends Controller
      *         required=true,
      *         description="Datos del establecimiento a crear",
      *         @OA\JsonContent(
-     *             @OA\Property(property="name", type="string", example="Establecimiento"),
-     *             @OA\Property(property="address", type="string", example="Dirección"),
-     *             @OA\Property(property="phone", type="string", example="1234567890"),
-     *             @OA\Property(property="email", type="string", example="info@example.com")
+     *             @OA\Property(property="establishment_name", type="string", example="Hospital español"),
+     *             @OA\Property(property="establishment_type", type="string", example="Hospital"),
+     *             @OA\Property(property="website_url", type="string", example=""),
+     *             @OA\Property(property="address_id", type="integer", example="1"),
+     *             @OA\Property(property="street", type="string", example="Calle central"),
+     *             @OA\Property(property="interior_number", type="integer", example="120"),
+     *             @OA\Property(property="exterior_number", type="integer", example="2"),
+     *             @OA\Property(property="neighborhood", type="string", example="cuajimalpa"),
+     *             @OA\Property(property="zip_code", type="integer", example="05330"),
+     *             @OA\Property(property="city", type="string", example="CDMX"),
+     *             @OA\Property(property="country", type="string", example="México")
      *         )
      *     ),
      *     @OA\Response(
@@ -126,12 +136,22 @@ class EstablishmentController extends Controller
      * )
      *
      * @param EstablishmentRequest $request
+     * @param AddressRequest $addressRequest
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(EstablishmentRequest $request): JsonResponse
+    public function store(EstablishmentRequest $request, AddressRequest $addressRequest): JsonResponse
     {
         try {
             $establishment = Establishment::create($request->validated());
+
+            $doctorId = auth()->user()->doctor->user_id;
+
+            $doctorEstablishment = DoctorEstablishment::create([
+                'doctor_user_id' => $doctorId,
+                'establishment_id' => $establishment->id,
+            ]);
+
+            $address = Address::create($addressRequest->validated() + ['establishment_id' => $establishment->id]);
 
             return response()->json([
                 'success' => true,
@@ -145,6 +165,24 @@ class EstablishmentController extends Controller
             ], 500);
         }
     }
+
+    // public function store(EstablishmentRequest $request): JsonResponse
+    // {
+    //     try {
+    //         $establishment = Establishment::create($request->validated());
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'data' => $establishment
+    //         ], 201);
+    //     } catch (QueryException $e) {
+    //         Log::error('Error al crear un nuevo establecimiento: ' . $e->getMessage());
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Error interno del servidor.'
+    //         ], 500);
+    //     }
+    // }
 
     /**
      * Muestra un establecimiento específico.
@@ -362,6 +400,46 @@ class EstablishmentController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Internal server error'
+            ], 500);
+        }
+    }
+
+
+    public function establishments_public(): JsonResponse
+    {
+        try {
+            $establishments = Establishment::paginate(5);
+            $establishments->getCollection()->transform(function ($establishment) {
+                return new EstablishmentResource($establishment);
+            });
+
+            $pagination = [
+                'success' => true,
+                'data' => $establishments->items(),
+                'links' => [
+                    'first' => $establishments->url(1),
+                    'last' => $establishments->url($establishments->lastPage()),
+                    'prev' => $establishments->previousPageUrl(),
+                    'next' => $establishments->nextPageUrl(),
+                ],
+                'meta' => [
+                    'current_page' => $establishments->currentPage(),
+                    'from' => $establishments->firstItem(),
+                    'last_page' => $establishments->lastPage(),
+                    'links' => $establishments->getUrlRange(1, $establishments->lastPage()),
+                    'path' => $establishments->url(1),
+                    'per_page' => $establishments->perPage(),
+                    'to' => $establishments->lastItem(),
+                    'total' => $establishments->total(),
+                ],
+            ];
+
+            return response()->json($pagination, 200);
+        } catch (QueryException $e) {
+            Log::error('Error en la consulta al obtener todos los establecimientos: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error interno del servidor'
             ], 500);
         }
     }

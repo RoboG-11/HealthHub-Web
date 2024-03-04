@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class AllergyPatientController extends Controller
@@ -82,10 +83,12 @@ class AllergyPatientController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
+
     public function index(): JsonResponse
     {
         try {
-            $allergies = AllergyPatient::paginate(5);
+            $patientUserId = Auth::id();
+            $allergies = AllergyPatient::where('patient_user_id', $patientUserId)->paginate(5);
             $allergies->getCollection()->transform(function ($allergy) {
                 return new AllergyPatientResource($allergy);
             });
@@ -120,6 +123,45 @@ class AllergyPatientController extends Controller
             ], 500);
         }
     }
+
+    // public function index(): JsonResponse
+    // {
+    //     try {
+    //         $allergies = AllergyPatient::paginate(5);
+    //         $allergies->getCollection()->transform(function ($allergy) {
+    //             return new AllergyPatientResource($allergy);
+    //         });
+
+    //         $pagination = [
+    //             'success' => true,
+    //             'data' => $allergies->items(),
+    //             'links' => [
+    //                 'first' => $allergies->url(1),
+    //                 'last' => $allergies->url($allergies->lastPage()),
+    //                 'prev' => $allergies->previousPageUrl(),
+    //                 'next' => $allergies->nextPageUrl(),
+    //             ],
+    //             'meta' => [
+    //                 'current_page' => $allergies->currentPage(),
+    //                 'from' => $allergies->firstItem(),
+    //                 'last_page' => $allergies->lastPage(),
+    //                 'links' => $allergies->getUrlRange(1, $allergies->lastPage()),
+    //                 'path' => $allergies->url(1),
+    //                 'per_page' => $allergies->perPage(),
+    //                 'to' => $allergies->lastItem(),
+    //                 'total' => $allergies->total(),
+    //             ],
+    //         ];
+
+    //         return response()->json($pagination, 200);
+    //     } catch (QueryException $e) {
+    //         Log::error('Error en la consulta al obtener todas las alergias: ' . $e->getMessage());
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Error interno del servidor'
+    //         ], 500);
+    //     }
+    // }
 
     /**
      * Crea una nueva relación entre una alergia y un paciente.

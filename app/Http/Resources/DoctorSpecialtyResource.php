@@ -27,7 +27,8 @@ class DoctorSpecialtyResource extends JsonResource
         return [
             'id' => $this->id,
             'doctor_user_id' => $this->doctor_user_id,
-            'specialty_id' => $this->specialty_id
+            // 'specialty_id' => $this->specialty_id,
+            'specialty' => $this->specialty,
         ];
     }
 }

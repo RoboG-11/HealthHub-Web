@@ -15,7 +15,7 @@ class PatientSeeder extends Seeder
     public function run(): void
     {
         $user = User::create([
-            'rol' => 'paciente',
+            'rol' => 'patient',
             'name' => 'Brian',
             'last_name' => 'Rivera Martinez',
             'email' => 'brian@example.com',
@@ -39,7 +39,7 @@ class PatientSeeder extends Seeder
         $patient->save();
 
         $user = User::create([
-            'rol' => 'paciente',
+            'rol' => 'patient',
             'name' => 'Juan',
             'last_name' => 'Escutia Jimenez',
             'email' => 'juan@example.com',

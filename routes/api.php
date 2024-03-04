@@ -33,44 +33,60 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+Route::post('/login', [UserController::class, 'login']);
+Route::post('/users/register', [UserController::class, 'store']);
+Route::post('/doctors/register', [DoctorController::class, 'store']);
+Route::post('/patients/register', [PatientController::class, 'store']);
+Route::get('/doctors_publics', [DoctorController::class, 'doctors_publics']);
+Route::get('/specialties_public', [SpecialtyController::class, 'specialties_public']);
 
-Route::resource('/users', UserController::class);
-Route::resource('/patients', PatientController::class);
-Route::resource('/allergies', AllergyController::class);
-Route::resource('/patients_allergies', AllergyPatientController::class);
-Route::resource('/diseases', DiseaseController::class);
-Route::resource('/diseases_patients', DiseasePatientController::class);
-Route::resource('/medications', MedicationController::class);
-Route::resource('/medications_patients', MedicationPatientController::class);
-Route::resource('/doctors', DoctorController::class);
-Route::resource('/specialty', SpecialtyController::class);
-Route::resource('/doctor_specialty', DoctorSpecialtyController::class);
-Route::resource('/establishments', EstablishmentController::class);
-Route::resource('/addresses', AddressController::class);
-Route::resource('/doctor_establishment', DoctorEstablishmentController::class);
-Route::resource('/appointments', AppointmentController::class);
-Route::resource('/medicines', MedicineController::class);
-Route::resource('/summaries', SummaryController::class);
-Route::resource('/schedules', ScheduleController::class);
+Route::middleware('auth:sanctum', 'role:doctor')->group(function () {
+    Route::get('/doctor/info', [DoctorController::class, 'info']);
+    Route::get('/patients', [PatientController::class, 'index']);
+    Route::get('/patients/{id}', [PatientController::class, 'show']);
+    Route::put('/doctors', [DoctorController::class, 'update']);
+    Route::delete('/doctors', [DoctorController::class, 'destroy']);
+    Route::resource('/doctors/specialty', DoctorSpecialtyController::class);
+    Route::resource('/establishments', EstablishmentController::class);
+    Route::resource('/addresses', AddressController::class);
+    Route::resource('/doctors/establishment', DoctorEstablishmentController::class);
+    Route::resource('/appointments', AppointmentController::class);
+    Route::resource('/medicines', MedicineController::class);
+    Route::resource('/summaries', SummaryController::class);
+    Route::resource('/schedules', ScheduleController::class);
+});
 
+Route::middleware('auth:sanctum', 'role:patient')->group(function () {
+    Route::get('/patient/info', [PatientController::class, 'info']);
+    // Route::get('/doctors', [DoctorController::class, 'index']);
+    Route::get('/doctors/{id}', [DoctorController::class, 'show']);
+    Route::put('/patients', [PatientController::class, 'update']);
+    Route::delete('/patients', [PatientController::class, 'destroy']);
+    Route::resource('/allergies', AllergyController::class);
+    Route::resource('/patient/allergies', AllergyPatientController::class);
+    Route::resource('/diseases', DiseaseController::class);
+    Route::resource('/patient/diseases', DiseasePatientController::class);
+    Route::resource('/medications', MedicationController::class);
+    Route::resource('/patient/medications', MedicationPatientController::class);
+});
 
-// Route::middleware('auth:sanctum')->get('/test', function (Request $request) {
-//     return $request->user();
-// });
-
-// Route::post('/users/login', [UserController::class, 'login']);
-
-// TEST: Google
-// use Laravel\Socialite\Facades\Socialite;
-// use App\Http\Controllers\GoogleLoginController;
-
-// Route::get('/login-google', [GoogleLoginController::class, 'redirectToGoogle']);
-// Route::get('/google-callback', [GoogleLoginController::class, 'handleGoogleCallback']);
-
-// Route::group(['middleware' => ['web']], function () {
-//     Route::get('/login-google', [GoogleLoginController::class, 'redirectToGoogle']);
-//     Route::get('/google-callback', [GoogleLoginController::class, 'handleGoogleCallback']);
+// Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+//     Route::resource('/users', UserController::class);
+//     Route::resource('/patients', PatientController::class);
+//     Route::resource('/allergies', AllergyController::class);
+//     Route::resource('/patients_allergies', AllergyPatientController::class);
+//     Route::resource('/diseases', DiseaseController::class);
+//     Route::resource('/diseases_patients', DiseasePatientController::class);
+//     Route::resource('/medications', MedicationController::class);
+//     Route::resource('/medications_patients', MedicationPatientController::class);
+//     Route::resource('/doctors', DoctorController::class);
+//     Route::resource('/specialty', SpecialtyController::class);
+//     Route::resource('/doctor_specialty', DoctorSpecialtyController::class);
+//     Route::resource('/establishments', EstablishmentController::class);
+//     Route::resource('/addresses', AddressController::class);
+//     Route::resource('/doctor_establishment', DoctorEstablishmentController::class);
+//     Route::resource('/appointments', AppointmentController::class);
+//     Route::resource('/medicines', MedicineController::class);
+//     Route::resource('/summaries', SummaryController::class);
+//     Route::resource('/schedules', ScheduleController::class);
 // });

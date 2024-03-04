@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class DoctorEstablishmentController extends Controller
@@ -59,7 +60,10 @@ class DoctorEstablishmentController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $doctorEstablishments = DoctorEstablishment::paginate(5);
+            $doctorId = Auth::user()->doctor->user_id;
+
+            // Obtenemos las relaciones DoctorEstablishment del doctor actual paginadas
+            $doctorEstablishments = DoctorEstablishment::where('doctor_user_id', $doctorId)->paginate(5);
             $doctorEstablishments->getCollection()->transform(function ($doctorEstablishment) {
                 return new DoctorEstablishmentResource($doctorEstablishment);
             });
@@ -87,13 +91,52 @@ class DoctorEstablishmentController extends Controller
 
             return response()->json($pagination, 200);
         } catch (QueryException $e) {
-            Log::error('Error en la consulta al obtener todas las especialidades de los doctores: ' . $e->getMessage());
+            Log::error('Error en la consulta al obtener las relaciones DoctorEstablishment del doctor: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Error interno del servidor'
             ], 500);
         }
     }
+
+    // public function index(): JsonResponse
+    // {
+    //     try {
+    //         $doctorEstablishments = DoctorEstablishment::paginate(5);
+    //         $doctorEstablishments->getCollection()->transform(function ($doctorEstablishment) {
+    //             return new DoctorEstablishmentResource($doctorEstablishment);
+    //         });
+
+    //         $pagination = [
+    //             'success' => true,
+    //             'data' => $doctorEstablishments->items(),
+    //             'links' => [
+    //                 'first' => $doctorEstablishments->url(1),
+    //                 'last' => $doctorEstablishments->url($doctorEstablishments->lastPage()),
+    //                 'prev' => $doctorEstablishments->previousPageUrl(),
+    //                 'next' => $doctorEstablishments->nextPageUrl(),
+    //             ],
+    //             'meta' => [
+    //                 'current_page' => $doctorEstablishments->currentPage(),
+    //                 'from' => $doctorEstablishments->firstItem(),
+    //                 'last_page' => $doctorEstablishments->lastPage(),
+    //                 'links' => $doctorEstablishments->getUrlRange(1, $doctorEstablishments->lastPage()),
+    //                 'path' => $doctorEstablishments->url(1),
+    //                 'per_page' => $doctorEstablishments->perPage(),
+    //                 'to' => $doctorEstablishments->lastItem(),
+    //                 'total' => $doctorEstablishments->total(),
+    //             ],
+    //         ];
+
+    //         return response()->json($pagination, 200);
+    //     } catch (QueryException $e) {
+    //         Log::error('Error en la consulta al obtener todas las especialidades de los doctores: ' . $e->getMessage());
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Error interno del servidor'
+    //         ], 500);
+    //     }
+    // }
 
     /**
      * Crea una nueva relación entre doctor y establecimiento médico.

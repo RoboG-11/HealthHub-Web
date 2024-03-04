@@ -10,14 +10,18 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\UserController;
+use App\Http\Requests\PatientUpdateRequest;
 use App\Http\Requests\UserRequest;
+use App\Http\Requests\UserUpdateRequest;
 use App\Http\Resources\UserResource;
+use App\Mail\MailRegister;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class PatientController extends Controller
 {
@@ -195,7 +199,7 @@ class PatientController extends Controller
             $userData = $userRequest->only([
                 'name', 'last_name', 'email', 'password', 'phone', 'sex', 'age', 'date_of_birth', 'link_photo'
             ]);
-            $userData['rol'] = 'paciente';
+            $userData['rol'] = 'patient';
 
             $userController = new UserController();
             $userResponse = $userController->store(new UserRequest($userData));
@@ -377,11 +381,12 @@ class PatientController extends Controller
      *     )
      * )
      */
-    public function update(PatientRequest $patientRequest, UserRequest $userRequest, string $id)
+
+    public function update(PatientUpdateRequest $patientRequest, UserUpdateRequest $userRequest)
     {
         try {
-            $patient = Patient::where('user_id', $id)->firstOrFail();
-            $user = User::findOrFail($patient->user_id);
+            $patient = Auth::user()->patient;
+            $user = $patient->user;
 
             $patient->weight = $patientRequest->input('weight');
             $patient->height = $patientRequest->input('height');
@@ -421,20 +426,57 @@ class PatientController extends Controller
         }
     }
 
+    // public function update(PatientRequest $patientRequest, UserRequest $userRequest, string $id)
+    // {
+    //     try {
+    //         $patient = Patient::where('user_id', $id)->firstOrFail();
+    //         $user = User::findOrFail($patient->user_id);
+
+    //         $patient->weight = $patientRequest->input('weight');
+    //         $patient->height = $patientRequest->input('height');
+    //         $patient->nss = $patientRequest->input('nss');
+    //         $patient->occupation = $patientRequest->input('occupation');
+    //         $patient->blood_type = $patientRequest->input('blood_type');
+    //         $patient->emergency_contact_phone = $patientRequest->input('emergency_contact_phone');
+    //         $patient->save();
+
+    //         $user->name = $userRequest->input('name');
+    //         $user->last_name = $userRequest->input('last_name');
+    //         $user->email = $userRequest->input('email');
+    //         $user->phone = $userRequest->input('phone');
+    //         $user->sex = $userRequest->input('sex');
+    //         $user->age = $userRequest->input('age');
+    //         $user->date_of_birth = $userRequest->input('date_of_birth');
+    //         $user->link_photo = $userRequest->input('link_photo');
+    //         $user->save();
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'data' => [
+    //                 'patient' => new PatientResource($patient),
+    //             ]
+    //         ], 200);
+    //     } catch (ModelNotFoundException $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Paciente o usuario no encontrado'
+    //         ], 404);
+    //     } catch (\Exception $e) {
+    //         Log::error('Error al actualizar paciente y usuario: ' . $e->getMessage());
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Error interno del servidor'
+    //         ], 500);
+    //     }
+    // }
+
 
     /**
-     * Elimina un paciente y su usuario asociado por el ID del usuario.
+     * Elimina al paciente autenticado y su usuario asociado.
      *
      * @OA\Delete(
-     *     path="/api/patients/{id}",
-     *     summary="Elimina un paciente y su usuario asociado por el ID del usuario",
-     *     @OA\Parameter(
-     *         name="id",
-     *         in="path",
-     *         required=true,
-     *         description="ID de usuario del paciente",
-     *         @OA\Schema(type="string")
-     *     ),
+     *     path="/api/patients",
+     *     summary="Elimina al paciente autenticado y su usuario asociado",
      *     @OA\Response(
      *         response=200,
      *         description="Paciente y usuario eliminados correctamente",
@@ -460,15 +502,14 @@ class PatientController extends Controller
      *     )
      * )
      *
-     * @param string $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(): JsonResponse
     {
         try {
-            $patient = Patient::where('user_id', $id)->firstOrFail();
+            $patient = Auth::user()->patient;
 
-            $user = User::findOrFail($id);
+            $user = $patient->user;
             $patient->delete();
             $user->delete();
 
@@ -485,6 +526,66 @@ class PatientController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error interno del servidor'
+            ], 500);
+        }
+    }
+
+
+    /**
+     * Obtiene la información del paciente autenticado.
+     *
+     * @OA\Get(
+     *     path="/api/patients/info",
+     *     summary="Obtiene la información del paciente autenticado",
+     *     @OA\Response(
+     *         response=200,
+     *         description="Información del paciente",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="true"),
+     *             @OA\Property(property="data", ref="#/components/schemas/PatientResource")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Paciente no encontrado",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Paciente no encontrado")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Error interno del servidor",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example="false"),
+     *             @OA\Property(property="message", type="string", example="Error interno del servidor")
+     *         )
+     *     )
+     * )
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function info(): JsonResponse
+    {
+        try {
+            $patient = Auth::user()->patient;
+
+            if (!$patient) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Patient not found'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => new PatientResource($patient)
+            ], 200);
+        } catch (\Exception $e) {
+            Log::error('Error al obtener la información del paciente: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Internal server error'
             ], 500);
         }
     }

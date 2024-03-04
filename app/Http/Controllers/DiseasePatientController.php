@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class DiseasePatientController extends Controller
@@ -47,45 +48,84 @@ class DiseasePatientController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $diseasePatient = DiseasePatient::paginate(5);
-            $diseasePatient->getCollection()->transform(function ($diseasePatient) {
-                return [
-                    'id' => $diseasePatient->id,
-                    'patient_user_id' => $diseasePatient->patient_user_id,
-                    'disease_id' => $diseasePatient->disease_id,
-                ];
+            $userId = Auth::id();
+            $diseases = DiseasePatient::where('patient_user_id', $userId)->paginate(5);
+            $diseases->getCollection()->transform(function ($disease) {
+                return new DiseasePatientResource($disease);
             });
 
             $pagination = [
                 'success' => true,
-                'data' => $diseasePatient->items(),
+                'data' => $diseases->items(),
                 'links' => [
-                    'first' => $diseasePatient->url(1),
-                    'last' => $diseasePatient->url($diseasePatient->lastPage()),
-                    'prev' => $diseasePatient->previousPageUrl(),
-                    'next' => $diseasePatient->nextPageUrl(),
+                    'first' => $diseases->url(1),
+                    'last' => $diseases->url($diseases->lastPage()),
+                    'prev' => $diseases->previousPageUrl(),
+                    'next' => $diseases->nextPageUrl(),
                 ],
                 'meta' => [
-                    'current_page' => $diseasePatient->currentPage(),
-                    'from' => $diseasePatient->firstItem(),
-                    'last_page' => $diseasePatient->lastPage(),
-                    'links' => $diseasePatient->getUrlRange(1, $diseasePatient->lastPage()),
-                    'path' => $diseasePatient->url(1),
-                    'per_page' => $diseasePatient->perPage(),
-                    'to' => $diseasePatient->lastItem(),
-                    'total' => $diseasePatient->total(),
+                    'current_page' => $diseases->currentPage(),
+                    'from' => $diseases->firstItem(),
+                    'last_page' => $diseases->lastPage(),
+                    'links' => $diseases->getUrlRange(1, $diseases->lastPage()),
+                    'path' => $diseases->url(1),
+                    'per_page' => $diseases->perPage(),
+                    'to' => $diseases->lastItem(),
+                    'total' => $diseases->total(),
                 ],
             ];
 
             return response()->json($pagination, 200);
         } catch (QueryException $e) {
-            Log::error('Error en la consulta al obtener todas las enfermedades de los pacientes: ' . $e->getMessage());
+            Log::error('Error en la consulta al obtener todas las enfermedades: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Error interno del servidor'
             ], 500);
         }
     }
+    // public function index(): JsonResponse
+    // {
+    //     try {
+    //         $diseasePatient = DiseasePatient::paginate(5);
+    //         $diseasePatient->getCollection()->transform(function ($diseasePatient) {
+    //             return [
+    //                 'id' => $diseasePatient->id,
+    //                 'patient_user_id' => $diseasePatient->patient_user_id,
+    //                 'disease_id' => $diseasePatient->disease_id,
+    //             ];
+    //         });
+
+    //         $pagination = [
+    //             'success' => true,
+    //             'data' => $diseasePatient->items(),
+    //             'links' => [
+    //                 'first' => $diseasePatient->url(1),
+    //                 'last' => $diseasePatient->url($diseasePatient->lastPage()),
+    //                 'prev' => $diseasePatient->previousPageUrl(),
+    //                 'next' => $diseasePatient->nextPageUrl(),
+    //             ],
+    //             'meta' => [
+    //                 'current_page' => $diseasePatient->currentPage(),
+    //                 'from' => $diseasePatient->firstItem(),
+    //                 'last_page' => $diseasePatient->lastPage(),
+    //                 'links' => $diseasePatient->getUrlRange(1, $diseasePatient->lastPage()),
+    //                 'path' => $diseasePatient->url(1),
+    //                 'per_page' => $diseasePatient->perPage(),
+    //                 'to' => $diseasePatient->lastItem(),
+    //                 'total' => $diseasePatient->total(),
+    //             ],
+    //         ];
+
+    //         return response()->json($pagination, 200);
+    //     } catch (QueryException $e) {
+    //         Log::error('Error en la consulta al obtener todas las enfermedades de los pacientes: ' . $e->getMessage());
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Error interno del servidor'
+    //         ], 500);
+    //     }
+    // }
 
     /**
      * Crea una nueva relación entre enfermedades y pacientes.

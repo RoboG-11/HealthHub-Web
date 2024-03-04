@@ -15,4 +15,9 @@ class DoctorEstablishment extends Model
         'doctor_user_id',
         'establishment_id'
     ];
+
+    public function establishment()
+    {
+        return $this->belongsTo(Establishment::class, 'establishment_id');
+    }
 }

@@ -2783,6 +2783,69 @@
                         }
                     }
                 }
+            },
+            "delete": {
+                "summary": "Elimina al doctor autenticado y su usuario asociado",
+                "description": "Elimina al doctor autenticado y su usuario asociado.",
+                "operationId": "9bafcac015bd5eafd0aef1d764ed5874",
+                "responses": {
+                    "200": {
+                        "description": "Doctor y usuario eliminados exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Doctor no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "false"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Doctor no encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "false"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error interno del servidor"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/doctors/{id}": {
@@ -2995,25 +3058,16 @@
                         }
                     }
                 }
-            },
-            "delete": {
-                "summary": "Elimina un doctor y su usuario asociado",
-                "description": "Elimina un doctor y su usuario asociado.",
-                "operationId": "0ce07cef46a97c7cf00c188f3d236076",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID del doctor a eliminar",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
+            }
+        },
+        "/api/doctors/info": {
+            "get": {
+                "summary": "Obtiene la información del doctor autenticado",
+                "description": "Obtiene la información del doctor autenticado.",
+                "operationId": "febf060954094c5463f55a5e082e2ddc",
                 "responses": {
                     "200": {
-                        "description": "Doctor y usuario eliminados exitosamente",
+                        "description": "Información del doctor",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -3021,6 +3075,9 @@
                                         "success": {
                                             "type": "boolean",
                                             "example": "true"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/DoctorResource"
                                         }
                                     },
                                     "type": "object"
@@ -4018,21 +4075,49 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "name": {
+                                    "establishment_name": {
                                         "type": "string",
-                                        "example": "Establecimiento"
+                                        "example": "Hospital español"
                                     },
-                                    "address": {
+                                    "establishment_type": {
                                         "type": "string",
-                                        "example": "Dirección"
+                                        "example": "Hospital"
                                     },
-                                    "phone": {
+                                    "website_url": {
                                         "type": "string",
-                                        "example": "1234567890"
+                                        "example": ""
                                     },
-                                    "email": {
+                                    "address_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "street": {
                                         "type": "string",
-                                        "example": "info@example.com"
+                                        "example": "Calle central"
+                                    },
+                                    "interior_number": {
+                                        "type": "integer",
+                                        "example": "120"
+                                    },
+                                    "exterior_number": {
+                                        "type": "integer",
+                                        "example": "2"
+                                    },
+                                    "neighborhood": {
+                                        "type": "string",
+                                        "example": "cuajimalpa"
+                                    },
+                                    "zip_code": {
+                                        "type": "integer",
+                                        "example": "05330"
+                                    },
+                                    "city": {
+                                        "type": "string",
+                                        "example": "CDMX"
+                                    },
+                                    "country": {
+                                        "type": "string",
+                                        "example": "México"
                                     }
                                 },
                                 "type": "object"
@@ -5913,6 +5998,69 @@
                         }
                     }
                 }
+            },
+            "delete": {
+                "summary": "Elimina al paciente autenticado y su usuario asociado",
+                "description": "Elimina al paciente autenticado y su usuario asociado.",
+                "operationId": "bd9e156ba2a50807a9351bce701ec87c",
+                "responses": {
+                    "200": {
+                        "description": "Paciente y usuario eliminados correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Paciente no encontrado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "false"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Paciente no encontrado"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error interno del servidor",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "false"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Error interno del servidor"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/patients/{id}": {
@@ -6144,25 +6292,16 @@
                         }
                     }
                 }
-            },
-            "delete": {
-                "summary": "Elimina un paciente y su usuario asociado por el ID del usuario",
-                "description": "Elimina un paciente y su usuario asociado por el ID del usuario.",
-                "operationId": "2a1632c6f39f39a43a35f002e573e3d1",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID de usuario del paciente",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                ],
+            }
+        },
+        "/api/patients/info": {
+            "get": {
+                "summary": "Obtiene la información del paciente autenticado",
+                "description": "Obtiene la información del paciente autenticado.",
+                "operationId": "d778e00d579e6fb4984023aa08554560",
                 "responses": {
                     "200": {
-                        "description": "Paciente y usuario eliminados correctamente",
+                        "description": "Información del paciente",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -6170,6 +6309,9 @@
                                         "success": {
                                             "type": "boolean",
                                             "example": "true"
+                                        },
+                                        "data": {
+                                            "$ref": "#/components/schemas/PatientResource"
                                         }
                                     },
                                     "type": "object"
@@ -8561,6 +8703,10 @@
                         "type": "string",
                         "format": "date",
                         "example": "1990-01-01"
+                    },
+                    "link_photo": {
+                        "type": "string",
+                        "example": "http://example.com/photo.jpg"
                     }
                 },
                 "type": "object"

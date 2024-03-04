@@ -27,7 +27,7 @@ class DoctorEstablishmentResource extends JsonResource
         return [
             'id' => $this->id,
             'doctor_user_id' => $this->doctor_user_id,
-            'establishment_id' => $this->establishment_id
+            'establishment' => $this->establishment
         ];
     }
 }

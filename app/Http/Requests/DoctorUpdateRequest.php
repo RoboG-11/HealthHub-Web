@@ -5,9 +5,10 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
-class DoctorRequest extends FormRequest
+class DoctorUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -43,15 +44,11 @@ class DoctorRequest extends FormRequest
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('doctors', 'professional_license')->ignore($this->route('doctor'), 'user_id'),
+                Rule::unique('doctors', 'professional_license')
+                    ->ignore(Auth::user()->doctor->user_id, 'user_id'),
+
             ],
-
         ];
-
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $sentFields = array_keys($this->all());
-            $rules = array_intersect_key($rules, array_flip($sentFields));
-        }
 
         return $rules;
     }

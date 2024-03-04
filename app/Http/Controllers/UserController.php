@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResource;
+use App\Mail\MailRegister;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -134,6 +135,8 @@ class UserController extends Controller
     {
         try {
             $user = User::create($request->all());
+
+            // Mail::to($user->email)->send(new MailRegister($user->name));
 
             return response()->json([
                 'success' => true,

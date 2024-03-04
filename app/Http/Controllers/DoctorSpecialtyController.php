@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class DoctorSpecialtyController extends Controller
@@ -56,10 +57,12 @@ class DoctorSpecialtyController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
+
     public function index(): JsonResponse
     {
         try {
-            $doctorSpecialties = DoctorSpecialty::paginate(5);
+            $doctorId = Auth::user()->doctor->user_id;
+            $doctorSpecialties = DoctorSpecialty::where('doctor_user_id', $doctorId)->paginate(5);
             $doctorSpecialties->getCollection()->transform(function ($doctorSpecialty) {
                 return new DoctorSpecialtyResource($doctorSpecialty);
             });
@@ -94,6 +97,83 @@ class DoctorSpecialtyController extends Controller
             ], 500);
         }
     }
+
+
+    // public function index(): JsonResponse
+    // {
+    //     try {
+    //         $doctorId = Auth::user()->doctor->user_id;
+    //         $doctorSpecialties = DoctorSpecialty::where('doctor_user_id', $doctorId)->paginate(5);
+
+    //         $pagination = [
+    //             'success' => true,
+    //             'data' => $doctorSpecialties->items(),
+    //             'links' => [
+    //                 'first' => $doctorSpecialties->url(1),
+    //                 'last' => $doctorSpecialties->url($doctorSpecialties->lastPage()),
+    //                 'prev' => $doctorSpecialties->previousPageUrl(),
+    //                 'next' => $doctorSpecialties->nextPageUrl(),
+    //             ],
+    //             'meta' => [
+    //                 'current_page' => $doctorSpecialties->currentPage(),
+    //                 'from' => $doctorSpecialties->firstItem(),
+    //                 'last_page' => $doctorSpecialties->lastPage(),
+    //                 'links' => $doctorSpecialties->getUrlRange(1, $doctorSpecialties->lastPage()),
+    //                 'path' => $doctorSpecialties->url(1),
+    //                 'per_page' => $doctorSpecialties->perPage(),
+    //                 'to' => $doctorSpecialties->lastItem(),
+    //                 'total' => $doctorSpecialties->total(),
+    //             ],
+    //         ];
+
+    //         return response()->json($pagination, 200);
+    //     } catch (QueryException $e) {
+    //         Log::error('Error en la consulta al obtener todas las especialidades de los doctores: ' . $e->getMessage());
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Error interno del servidor'
+    //         ], 500);
+    //     }
+    // }
+
+    // public function index(): JsonResponse
+    // {
+    //     try {
+    //         $doctorSpecialties = DoctorSpecialty::paginate(5);
+    //         $doctorSpecialties->getCollection()->transform(function ($doctorSpecialty) {
+    //             return new DoctorSpecialtyResource($doctorSpecialty);
+    //         });
+
+    //         $pagination = [
+    //             'success' => true,
+    //             'data' => $doctorSpecialties->items(),
+    //             'links' => [
+    //                 'first' => $doctorSpecialties->url(1),
+    //                 'last' => $doctorSpecialties->url($doctorSpecialties->lastPage()),
+    //                 'prev' => $doctorSpecialties->previousPageUrl(),
+    //                 'next' => $doctorSpecialties->nextPageUrl(),
+    //             ],
+    //             'meta' => [
+    //                 'current_page' => $doctorSpecialties->currentPage(),
+    //                 'from' => $doctorSpecialties->firstItem(),
+    //                 'last_page' => $doctorSpecialties->lastPage(),
+    //                 'links' => $doctorSpecialties->getUrlRange(1, $doctorSpecialties->lastPage()),
+    //                 'path' => $doctorSpecialties->url(1),
+    //                 'per_page' => $doctorSpecialties->perPage(),
+    //                 'to' => $doctorSpecialties->lastItem(),
+    //                 'total' => $doctorSpecialties->total(),
+    //             ],
+    //         ];
+
+    //         return response()->json($pagination, 200);
+    //     } catch (QueryException $e) {
+    //         Log::error('Error en la consulta al obtener todas las especialidades de los doctores: ' . $e->getMessage());
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Error interno del servidor'
+    //         ], 500);
+    //     }
+    // }
 
     /**
      * Crea una nueva relación entre doctor y especialidad.

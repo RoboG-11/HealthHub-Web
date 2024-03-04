@@ -12,6 +12,11 @@ class Disease extends Model
 
     protected $fillable = ['disease_name', 'description'];
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+
     // NOTE: Relación con la tabla patients - muchos a muchos
     public function patients(): BelongsToMany
     {

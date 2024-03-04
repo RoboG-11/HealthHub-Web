@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class ScheduleController extends Controller
@@ -67,7 +68,10 @@ class ScheduleController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $schedules = Schedule::paginate(5);
+            $doctorId = Auth::user()->doctor->user_id;
+
+            $schedules = Schedule::where('doctor_id', $doctorId)->paginate(50);
+
             $schedules->getCollection()->transform(function ($schedule) {
                 return new ScheduleResource($schedule);
             });
@@ -102,6 +106,45 @@ class ScheduleController extends Controller
             ], 500);
         }
     }
+
+    // public function index(): JsonResponse
+    // {
+    //     try {
+    //         $schedules = Schedule::paginate(50);
+    //         $schedules->getCollection()->transform(function ($schedule) {
+    //             return new ScheduleResource($schedule);
+    //         });
+
+    //         $pagination = [
+    //             'success' => true,
+    //             'data' => $schedules->items(),
+    //             'links' => [
+    //                 'first' => $schedules->url(1),
+    //                 'last' => $schedules->url($schedules->lastPage()),
+    //                 'prev' => $schedules->previousPageUrl(),
+    //                 'next' => $schedules->nextPageUrl(),
+    //             ],
+    //             'meta' => [
+    //                 'current_page' => $schedules->currentPage(),
+    //                 'from' => $schedules->firstItem(),
+    //                 'last_page' => $schedules->lastPage(),
+    //                 'links' => $schedules->getUrlRange(1, $schedules->lastPage()),
+    //                 'path' => $schedules->url(1),
+    //                 'per_page' => $schedules->perPage(),
+    //                 'to' => $schedules->lastItem(),
+    //                 'total' => $schedules->total(),
+    //             ],
+    //         ];
+
+    //         return response()->json($pagination, 200);
+    //     } catch (QueryException $e) {
+    //         Log::error('Error en la consulta al obtener todos los horarios: ' . $e->getMessage());
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Error interno del servidor'
+    //         ], 500);
+    //     }
+    // }
 
     /**
      * Crea un nuevo horario.

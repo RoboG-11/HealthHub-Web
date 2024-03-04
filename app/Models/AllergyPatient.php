@@ -15,4 +15,14 @@ class AllergyPatient extends Model
         'patient_user_id',
         'allergy_id'
     ];
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class, 'patient_user_id', 'user_id');
+    }
+
+    public function allergy()
+    {
+        return $this->belongsTo(Allergy::class);
+    }
 }

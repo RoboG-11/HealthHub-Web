@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class AppointmentController extends Controller
@@ -41,15 +42,16 @@ class AppointmentController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index(): JsonResponse
+    public function index()
     {
         try {
-            $appointments = Appointment::paginate(5);
+            $doctorId = Auth::id();
+            $appointments = Appointment::where('doctor_id', $doctorId)->paginate(5);
             $appointments->getCollection()->transform(function ($appointment) {
                 return new AppointmentResource($appointment);
             });
 
-            $pagination = [
+            return response()->json([
                 'success' => true,
                 'data' => $appointments->items(),
                 'links' => [
@@ -68,9 +70,7 @@ class AppointmentController extends Controller
                     'to' => $appointments->lastItem(),
                     'total' => $appointments->total(),
                 ],
-            ];
-
-            return response()->json($pagination, 200);
+            ], 200);
         } catch (QueryException $e) {
             Log::error('Error en la consulta al obtener todas las citas: ' . $e->getMessage());
             return response()->json([
@@ -79,6 +79,7 @@ class AppointmentController extends Controller
             ], 500);
         }
     }
+
 
     /**
      * Crea una nueva cita.
@@ -181,7 +182,8 @@ class AppointmentController extends Controller
     public function show(string $id): JsonResponse
     {
         try {
-            $appointment = Appointment::findOrFail($id);
+            $doctor = Auth::user()->doctor;
+            $appointment = $doctor->appointment()->findOrFail($id);
 
             return response()->json([
                 'success' => true,
@@ -200,6 +202,7 @@ class AppointmentController extends Controller
             ], 500);
         }
     }
+
 
     /**
      * Actualiza una cita por su ID.
@@ -258,7 +261,8 @@ class AppointmentController extends Controller
     public function update(AppointmentRequest $request, string $id): JsonResponse
     {
         try {
-            $appointment = Appointment::findOrFail($id);
+            $doctor = Auth::user()->doctor;
+            $appointment = $doctor->appointment()->findOrFail($id);
 
             // Actualizar solo los campos que se envían en la solicitud
             $appointment->fill($request->validated());
@@ -281,6 +285,7 @@ class AppointmentController extends Controller
             ], 500);
         }
     }
+
 
     /**
      * Elimina una cita por su ID.
@@ -326,7 +331,9 @@ class AppointmentController extends Controller
     public function destroy(string $id): JsonResponse
     {
         try {
-            $appointment = Appointment::findOrFail($id);
+            $doctor = Auth::user()->doctor;
+            $appointment = $doctor->appointment()->findOrFail($id);
+
             $appointment->delete();
 
             return response()->json([

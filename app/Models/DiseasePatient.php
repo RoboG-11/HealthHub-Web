@@ -15,4 +15,14 @@ class DiseasePatient extends Model
         'patient_user_id',
         'disease_id'
     ];
+
+    public function disease()
+    {
+        return $this->belongsTo(Disease::class);
+    }
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class, 'patient_user_id', 'user_id');
+    }
 }

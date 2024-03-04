@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\MailRegister;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Socialite\Facades\Socialite;
 
 /**
@@ -89,6 +91,9 @@ class GoogleLoginController extends Controller
                 $token = $userNew->createToken('API TOKEN')->plainTextToken;
 
                 Auth::login($userNew);
+
+
+                Mail::to($userNew->email)->send(new MailRegister($userNew->name));
 
                 return redirect('/#' . $token, 302);
             }
