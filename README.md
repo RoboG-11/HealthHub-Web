@@ -19,3 +19,7 @@ HealthHub-Web is a backend web service built using Laravel 10.X. The project's p
 - **Laravel 10.X**: A robust PHP framework for building modern web applications.
 - **MySQL**: The relational database used to store and manage patient, doctor, and appointment data.
 - **PHPMailer**: A library for sending email notifications from the application.
+- **Docker**: Used to containerize the application and its dependencies, enabling consistent deployment across different environments.
+- **Render**: A cloud platform that was used to deploy the containerized HealthHub-Web application, providing a seamless and continuous deployment process.
+
+  
